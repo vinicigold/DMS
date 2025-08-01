@@ -1,103 +1,178 @@
-import Image from "next/image";
+'use client'
+import { useRef, useState } from 'react'
+import OtpModal from '@/components/Otpmodal'
 
-export default function Home() {
+export default function Login() {
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  })
+
+  const [email, setEmail] = useState('')
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [isInvalidEmail, setIsInvalidEmail] = useState(false)
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const otpFields = ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+  const [showNewPassModal, setShowNewPassModal] = useState(false)
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('Logging in with:', formData)
+  }
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (email === 'ivan@gmail.com'){
+      setShowEmailModal(false)
+      setShowOtpModal(true)
+    }
+    else{
+      setIsInvalidEmail(true)
+    }
+  }
+  const handleOtpSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const otp = otpRefs.current.map(ref => ref?.value || '').join('')
+    if (otp === '696969'){
+      setShowOtpModal(false)
+      setShowNewPassModal(true)
+    }else{
+      alert('invalid otp')
+    }
+  }
+  const allowNum = (e: React.FormEvent<HTMLInputElement>) => {
+    e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '')
+  }
+  const handleOtpChange = (e:React.ChangeEvent<HTMLInputElement>, index: number) =>{
+    const value = e.target.value
+    if(value){
+      e.target.value = value
+      if(index < otpFields.length - 1) {
+        otpRefs.current[index + 1]?.focus()
+      }
+    }
+  }
+  const handleOtpDel = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Backspace') {
+    if (e.currentTarget.value === '') {
+      if (index > 0) {
+        otpRefs.current[index - 1]?.focus()
+      }
+    } else {
+      e.currentTarget.value = ''
+    }
+  }
+  }
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <div className='min-h-screen flex items-center justify-center px-4 bg-[#f9f7f7] relative'>
+      <div className={`w-full max-w-md bg-[#DBE2EF] p-8 rounded-2xl shadow-lg z-10 transition-all duration-300 ${showEmailModal || showOtpModal || showNewPassModal ? 'blur-sm scale-[0.98] opacity-80' : ''}`}>
+        <form onSubmit={handleSubmit} className='w-full'>
+          <h2 className='text-3xl font-bold text-center mb-6 text-[#112D4E]'>
+            DMS
+          </h2>
+          <div className='mb-4'>
+            <label htmlFor='username' className='block text-[#112D4E] font-semibold mb-2'>
+              Username
+            </label>
+            <input type='text' id='username' name='username' value={formData.username} onChange={handleChange}
+              placeholder='Enter your username' required
+              className='w-full p-3 border border-[#3F72AF] rounded focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white'
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+          <div className='mb-4'>
+            <label htmlFor='password' className='block text-[#112D4E] font-semibold mb-2'>
+              Password
+            </label>
+            <input type='password' id='password' name='password' value={formData.password} onChange={handleChange}
+              placeholder='Enter your password' required
+              className='w-full p-3 border border-[#3F72AF] rounded focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white'
+            />
+          </div>
+          <button type='submit'
+            className='w-full bg-[#B9D7EA] text-[#112D4E] font-semibold py-3 rounded hover:bg-[#769FCD] transition duration-200'>
+            Login
+          </button>
+          <div className='text-center mt-4'>
+            <button type='button' onClick={() => setShowEmailModal(true)} className='text-[#112D4E] hover:underline text-sm'>
+              Forgot password?
+            </button>
+          </div>
+        </form>
+      </div>
+      {showEmailModal && (
+        <div className='fixed inset-0 bg-white/30 flex items-center justify-center z-50'>
+          <div className='bg-white w-full max-w-sm p-6 rounded-xl shadow-md'>
+            <h3 className='text-xl font-semibold text-[#112D4E] text-center mb-4'>Forgot Password</h3>
+            <form onSubmit={handleEmailSubmit}>
+              <label htmlFor='email' className='block text-[#112D4E] mb-2 font-medium'>Enter your email</label>
+              <input type='email' id='email' value={email} onChange={e => {
+                  setEmail(e.target.value) 
+                  setIsInvalidEmail(false)
+                }} required placeholder='you@example.com'
+                className={`w-full p-3 border rounded mb-4 focus:outline-none focus:ring-2 ${isInvalidEmail
+                ? 'border-red-500 focus:ring-red-500': 'border-[#3F72AF] focus:ring-[#3F72AF]'}`}
+              />
+              <div className='flex justify-end space-x-2'>
+                <button type='button' onClick={() => setShowEmailModal(false)}
+                  className='px-4 py-2 rounded bg-gray-300 text-[#112D4E] hover:bg-gray-400'>
+                  Cancel
+                </button>
+                <button type='submit' className='px-4 py-2 rounded bg-[#3F72AF] text-white hover:bg-[#2c5b93]'>
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
+      {showOtpModal && (
+  <OtpModal
+    isOpen={showOtpModal}
+    onClose={() => setShowOtpModal(false)}
+    onSubmit={(otp) => console.log('Submitted OTP:', otp)}
+  />
+)}
+      {showNewPassModal && (
+        <div className='fixed inset-0 bg-white/30 flex items-center justify-center z-50'>
+          <div className='bg-white w-full max-w-sm p-6 rounded-xl shadow-md'>
+            <h3 className='text-xl font-semibold text-[#112D4E] text-center mb-4'>Reset Password</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              const newPass = (e.currentTarget).newPassword.value
+              const confirmPass = (e.currentTarget).confirmPassword.value
+              if (newPass === confirmPass) {
+                console.log('Password successfully reset:', newPass)
+                setShowNewPassModal(false)
+              } else {
+                alert('Passwords do not match!')
+              }
+            }}>
+              <label className='block text-[#112D4E] font-medium mb-2' htmlFor='newPassword'>New Password</label>
+              <input type='password' id='newPassword' name='newPassword' required
+                className='w-full p-3 border border-[#3F72AF] rounded mb-4 focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E]'
+              />
+              <label className='block text-[#112D4E] font-medium mb-2' htmlFor='confirmPassword'>Confirm Password</label>
+              <input type='password' id='confirmPassword' name='confirmPassword' required
+                className='w-full p-3 border border-[#3F72AF] rounded mb-4 focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E]'
+              />
+              <div className='flex justify-end space-x-2'>
+                <button type='button' onClick={() => setShowNewPassModal(false)}
+                  className='px-4 py-2 rounded bg-gray-300 text-[#112D4E] hover:bg-gray-400'>
+                  Cancel
+                </button>
+                <button type='submit' className='px-4 py-2 rounded bg-[#3F72AF] text-white hover:bg-[#2c5b93]'>
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  )
 }
