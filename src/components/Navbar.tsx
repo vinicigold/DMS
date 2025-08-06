@@ -2,12 +2,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
-interface NavProps {
-    readonly isOpen: boolean;
-    readonly setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export default function Nav ({isOpen, setIsOpen}: NavProps) {
+export default function Nav () {
     const router = useRouter()
     const pathname = usePathname()
     const [dropDownOpen, setDropDownOpen] = useState<number | null>(null)
@@ -123,31 +118,16 @@ export default function Nav ({isOpen, setIsOpen}: NavProps) {
     }
 
     return(
-        <>
-        {!isOpen && (
-           <button
-                onClick={() => setIsOpen(prev => !prev)}
-                className="p-2 m-4 w-10 h-10 flex flex-col justify-between items-center rounded cursor-pointer z-20">
-                <span className="block w-6 h-1 bg-[#112D4E] rounded-4xl"></span>
-                <span className="block w-6 h-1 bg-[#112D4E] rounded-4xl"></span>
-                <span className="block w-6 h-1 bg-[#112D4E] rounded-4xl"></span>
-            </button>
-        )}
-        {isOpen && (
-            <aside className="bg-[#112D4E] w-64 h-full flex flex-col px-4 py-6">
-                <button
-                    onClick={() => setIsOpen(prev => !prev)}
-                    className="p-2 w-10 h-10 flex flex-col justify-between items-center text-black rounded cursor-pointer">
-                    <span className="block w-6 h-1 bg-white rounded-4xl"></span>
-                </button>
+            <aside className="bg-[#112D4E] w-50 h-full flex flex-col px-4 py-4 overflow-y-auto hide-scrollbar">    
                 <nav className="space-y-5">
                     {navbarLink.map((nav) => {
                         const isActive = pathname === nav.link
                         if(nav.Children) {
                             return(
                                 <div key={nav.id} className='relative'>
-                                    <button onClick={() => setDropDownOpen((prev) => (prev === nav.id ? null: nav.id))} className={`flex items-center w-full px-4 py-2 rounded-lg transition duration-200
-                                    ${isActive ? "bg-[#DBE2EF] text-[#112D4E]" : "hover:bg-[#3F72AF] text-white"}`}>
+                                    <button onClick={() => setDropDownOpen((prev) => (prev === nav.id ? null: nav.id))} 
+                                    className={`flex font-bold text-left items-center w-full px-4 py-2 rounded-lg transition duration-200
+                                        ${isActive ? "bg-[#DBE2EF] text-[#112D4E]" : "hover:bg-[#3F72AF] text-white"}`}>
                                         <span className="flex items-center">
                                             {nav.name}
                                         </span>
@@ -158,7 +138,8 @@ export default function Nav ({isOpen, setIsOpen}: NavProps) {
                                             {nav.Children.map((child) => {
                                                 const isChildActive = pathname === child.link
                                                 return(
-                                                    <Link className={`flex items-center px-4 py-2 rounded-lg transition duration-200 ${isChildActive ? "bg-[#DBE2EF] text-[#112D4E]" : "hover:bg-[#3F72AF] text-white"}`}
+                                                    <Link className={`flex text-xs font-bold items-center px-4 py-2 rounded-lg transition duration-200
+                                                        ${isChildActive ? "bg-[#DBE2EF] text-[#112D4E]" : "hover:bg-[#3F72AF] text-white"}`}
                                                     key={child.id}
                                                     href={child.link}>
                                                         {child.name}
@@ -171,7 +152,8 @@ export default function Nav ({isOpen, setIsOpen}: NavProps) {
                             )
                         }  
                         return (
-                            <Link className={`flex items-center px-4 py-2 rounded-lg transition duration-200 ${isActive ? "bg-[#DBE2EF] text-[#112D4E]" : "hover:bg-[#3F72AF] text-white"}`}
+                            <Link className={`flex font-bold items-center px-4 py-2 rounded-lg transition duration-200
+                                ${isActive ? "bg-[#DBE2EF] text-[#112D4E]" : "hover:bg-[#3F72AF] text-white"}`}
                             key={nav.id}
                             href={nav.link}>
                                 {nav.name}
@@ -181,14 +163,11 @@ export default function Nav ({isOpen, setIsOpen}: NavProps) {
                 </nav>
             <div className="mt-auto text-sm text-gray-300 text-center flex flex-col gap-5 ">
                 <button onClick={handleLogout}
-                    className="px-4 py-2 flex-1 w-full text-center rounded-xl hover:bg-[#DBE2EF] hover:text-[#112D4E] transition ease-in-out">
+                    className="px-4 font-bold py-2 flex-1 w-full text-center rounded-xl hover:bg-[#DBE2EF] hover:text-[#112D4E] transition ease-in-out">
                     Logout
                 </button>
                 <p className="text-xs">&copy; 2025 CARD MRI</p>
             </div>
         </aside>
-        )}
-        </>
-        
     )
 }

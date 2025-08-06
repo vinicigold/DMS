@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import Nav from '@/components/Navbar'
 import Head from '@/components/Header'
 
@@ -8,13 +8,12 @@ interface LayoutProps {
 }
 
 export default function Layout ({ children }: LayoutProps) {
-    const [isOpen, setIsOpen] = useState(true)
     return (
-        <div className="h-screen flex flex-col">
+        <div className="h-screen flex flex-col overflow-hidden">
             <Head />
-            <div className="flex flex-1">
-                <Nav isOpen={isOpen} setIsOpen={setIsOpen}/>
-                <main className="flex-1 p-6 overflow-auto">
+            <div className="flex flex-row flex-1 overflow-hidden">
+                <Nav/>
+                <main className="flex-1 p-6 overflow-auto hide-scrollbar">
                     {children}
                 </main>
             </div>

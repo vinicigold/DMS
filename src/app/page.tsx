@@ -15,7 +15,6 @@ export default function Login() {
   const [showOtpModal, setShowOtpModal] = useState(false)
   const [showNewPassModal, setShowNewPassModal] = useState(false)
 
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
@@ -50,7 +49,7 @@ export default function Login() {
             />
           </div>
           <button type='submit'
-            className='w-full bg-[#B9D7EA] text-[#112D4E] font-semibold py-3 rounded hover:bg-[#769FCD] transition duration-200'>
+            className='w-full bg-[#112D4E] text-[#ffffff] font-semibold py-3 rounded hover:bg-[#769FCD] transition duration-200'>
             Login
           </button>
           <div className='text-center mt-4'>
