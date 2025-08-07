@@ -13,7 +13,7 @@ export default function Layout ({ children }: LayoutProps) {
             <Head />
             <div className="flex flex-row flex-1 overflow-hidden">
                 <Nav/>
-                <main className="flex-1 p-6 overflow-auto hide-scrollbar">
+                <main className=" flex-1 overflow-auto hide-scrollbar">
                     {children}
                 </main>
             </div>

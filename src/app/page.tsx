@@ -3,6 +3,7 @@ import { useState } from 'react'
 import OtpModal from '@/components/Otpmodal'
 import EmailModal from '@/components/Staffidmodal'
 import NewPassModal from '@/components/Newpassmodal'
+import { useRouter } from 'next/navigation'
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -10,9 +11,11 @@ export default function Login() {
     password: ''
   })
 
+  const router = useRouter()
   const [showStaffIdModal, setShowStaffIdModal] = useState(false)
   const [isInvalidStaffId, setIsInvalidStaffId] = useState(false)
   const [showOtpModal, setShowOtpModal] = useState(false)
+  const [forOtpReset, setForOtpReset] = useState(false)
   const [showNewPassModal, setShowNewPassModal] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,8 +24,13 @@ export default function Login() {
   }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Logging in with:', formData)
+    if (formData.username === 'admin' && formData.password === 'admin') {
+      setShowOtpModal(true)
+    } else {
+      setFormData({ username: '', password: '' })
+    }
   }
+
   return (
     <div className='min-h-screen flex items-center justify-center px-4 bg-[#f9f7f7] relative'>
       <div className={`w-full max-w-md bg-[#DBE2EF] p-8 rounded-2xl shadow-lg z-10 transition-all duration-300 ${showStaffIdModal || showOtpModal || showNewPassModal ? 'blur-sm scale-[0.98] opacity-80' : ''}`}>
@@ -49,7 +57,7 @@ export default function Login() {
             />
           </div>
           <button type='submit'
-            className='w-full bg-[#112D4E] text-[#ffffff] font-semibold py-3 rounded hover:bg-[#769FCD] transition duration-200'>
+            className='w-full bg-[#112D4E] text-[#ffffff] font-semibold py-3 rounded hover:bg-[#163b65] transition duration-200'>
             Login
           </button>
           <div className='text-center mt-4'>
@@ -68,6 +76,7 @@ export default function Login() {
           onSubmit={(submittedStaffId) => {
             console.log('Submitted Staff ID:', submittedStaffId)
             setShowStaffIdModal(false)
+            setForOtpReset(true)
             setShowOtpModal(true)
           }}
           error={isInvalidStaffId}
@@ -80,7 +89,11 @@ export default function Login() {
           onSubmit={(otp) => {
             console.log('Submitted OTP:', otp)
             setShowOtpModal(false)
-            setShowNewPassModal(true)
+            if (forOtpReset) {
+              setShowNewPassModal(true)
+            } else {
+              router.push('/dms/dashboard')
+            }
           }}
         />
       )}

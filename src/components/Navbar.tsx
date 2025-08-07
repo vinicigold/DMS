@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid'
 
 export default function Nav () {
-    const router = useRouter()
     const pathname = usePathname()
     const [dropDownOpen, setDropDownOpen] = useState<number | null>(null)
     const navbarLink = [
@@ -112,10 +112,6 @@ export default function Nav () {
             ]
         }
     ]
-    
-    const handleLogout = async () => {
-        router.push('/')
-    }
 
     return(
             <aside className="bg-[#112D4E] w-50 h-full flex flex-col px-4 py-4 overflow-y-auto hide-scrollbar">    
@@ -131,7 +127,11 @@ export default function Nav () {
                                         <span className="flex items-center">
                                             {nav.name}
                                         </span>
-                                        <span className="ml-2">{dropDownOpen === nav.id ? '▲' : '▼'}</span>
+                                        <span className="ml-2">{dropDownOpen === nav.id ?(
+                                            <ChevronUpIcon className="w-5 h-5 text-white"/>
+                                            ):(
+                                            <ChevronDownIcon className="w-5 h-5 text-white"/>)}
+                                        </span>
                                         </button>
                                     {dropDownOpen === nav.id && (
                                         <div className='ml-4 mt-1 flex flex-col space-y-1'>
@@ -162,10 +162,6 @@ export default function Nav () {
                     })}
                 </nav>
             <div className="mt-auto text-sm text-gray-300 text-center flex flex-col gap-5 ">
-                <button onClick={handleLogout}
-                    className="px-4 font-bold py-2 flex-1 w-full text-center rounded-xl hover:bg-[#DBE2EF] hover:text-[#112D4E] transition ease-in-out">
-                    Logout
-                </button>
                 <p className="text-xs">&copy; 2025 CARD MRI</p>
             </div>
         </aside>
