@@ -122,7 +122,7 @@ export default function Nav () {
                             return(
                                 <div key={nav.id} className='relative'>
                                     <button onClick={() => setDropDownOpen((prev) => (prev === nav.id ? null: nav.id))} 
-                                    className={`flex font-bold text-left items-center w-full px-4 py-2 rounded-lg transition duration-200
+                                        className={`flex font-bold text-left items-center w-full px-4 py-2 rounded-lg transition duration-200
                                         ${isActive ? "bg-[#DBE2EF] text-[#112D4E]" : "hover:bg-[#3F72AF] text-white"}`}>
                                         <span className="flex items-center">
                                             {nav.name}
@@ -154,9 +154,9 @@ export default function Nav () {
                         return (
                             <Link className={`flex font-bold items-center px-4 py-2 rounded-lg transition duration-200
                                 ${isActive ? "bg-[#DBE2EF] text-[#112D4E]" : "hover:bg-[#3F72AF] text-white"}`}
-                            key={nav.id}
-                            href={nav.link}>
-                                {nav.name}
+                                key={nav.id}
+                                href={nav.link}>
+                                    {nav.name}
                             </Link>
                         )
                     })}

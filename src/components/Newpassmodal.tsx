@@ -45,7 +45,7 @@ export default function NewPassModal({
   }
 
   return (
-    <div className='fixed inset-0 bg-white/30 flex items-center justify-center z-50'>
+    <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
       <div className='bg-white w-full max-w-sm p-6 rounded-xl shadow-md'>
         <h3 className='text-xl font-semibold text-[#112D4E] text-center mb-4'>Reset Password</h3>
         <form onSubmit={handleSubmit}>

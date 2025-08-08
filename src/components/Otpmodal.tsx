@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef } from 'react'
+import { XMarkIcon, LockClosedIcon, EyeIcon, } from '@heroicons/react/24/solid'
 
 interface OtpModalProps {
     readonly isOpen: boolean
@@ -52,7 +53,7 @@ const handleSubmit = (e: React.FormEvent) => {
 if (!isOpen) return null
 
 return (
-<div className="fixed inset-0 bg-white/30 flex items-center justify-center z-50">
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div className="bg-white w-full max-w-sm p-6 rounded-xl shadow-md">
     <h3 className="text-xl font-semibold text-[#112D4E] text-center mb-4">Enter OTP</h3>
     <form onSubmit={handleSubmit}>
