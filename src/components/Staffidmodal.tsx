@@ -20,6 +20,7 @@ export default function StaffIdModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     if (staffId === '20250755206') {
     onSubmit(staffId)
   } else {
@@ -71,8 +72,7 @@ export default function StaffIdModal({
                   placeholder="Staff ID"
                   className={`w-full pl-12 pr-4 py-4 border rounded-xl focus:outline-none focus:ring-2 text-[#112D4E] bg-white transition-all duration-200
                     ${error ? 'border-red-500 focus:ring-red-500'
-                    :
-                    'border-[#3F72AF] focus:ring-[#3F72AF]'
+                    :'border-[#3F72AF] focus:ring-[#3F72AF]'
                   }`}
                   disabled={isLoading}
                 />

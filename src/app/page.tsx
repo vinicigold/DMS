@@ -4,8 +4,7 @@ import OtpModal from '@/components/Otpmodal'
 import EmailModal from '@/components/Staffidmodal'
 import NewPassModal from '@/components/Newpassmodal'
 import { useRouter } from 'next/navigation'
-import { LockClosedIcon, EyeIcon, EyeSlashIcon, UserIcon, KeyIcon, } from '@heroicons/react/24/solid'
-import { Building2 } from 'lucide-react'
+import { LockClosedIcon, EyeIcon, EyeSlashIcon, UserIcon, KeyIcon, DocumentDuplicateIcon} from '@heroicons/react/24/solid'
 
 export default function Login() {
   const [signIn, setSignIn] = useState({
@@ -21,7 +20,7 @@ export default function Login() {
   const [forOtpReset, setForOtpReset] = useState(false)
   const [showNewPassModal, setShowNewPassModal] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -31,13 +30,16 @@ export default function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError('')
 
       if (signIn.username === 'admin' && signIn.password === 'admin') {
         setForOtpReset(false)
         setShowOtpModal(true)
       } else {
         setSignIn({ username: '', password: '' })
+        setError('Invalid username or password')
       }
+      setIsLoading(false)
   }
 
   return (
@@ -48,17 +50,23 @@ export default function Login() {
           fill='none' fillRule='evenodd'%3E%3Cg fill='%23112D4E' fillOpacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }} />
       </div>
-      <div className={`w-full max-w-md bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 z-10 transition-all duration-500 ${showStaffIdModal || showOtpModal || showNewPassModal ? 'blur-sm scale-[0.98] opacity-80' : 'hover:shadow-3xl'}`}>
+      <div className={`w-full max-w-md bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 z-10 transition-all duration-500
+      ${showStaffIdModal || showOtpModal || showNewPassModal ? 'blur-sm scale-[0.98] opacity-80':'hover:shadow-3xl'}`}>
         <form onSubmit={handleSubmit} className='w-full'>
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Building2 className="w-10 h-10 text-white" />
+              <DocumentDuplicateIcon className="w-10 h-10 text-white" />
             </div>
             <h2 className='text-3xl font-bold text-[#112D4E] mb-2'>
               Document Management System
             </h2>
             <p className="text-[#64748b] text-sm">V1.0.0</p>
           </div>
+          {error && (
+            <div className='bg-red-50 border border-red-200 rounded-xl p-4 mb-6'>
+              <p className='font-medium text-sm text-center text-red-600'>{error}</p>
+            </div>
+          )}
           <div className='mb-4'>
             <label htmlFor='username' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
               Username
@@ -96,10 +104,9 @@ export default function Login() {
                 />
                 <button type='button' onClick={() => setShowPassword(!showPassword)}
                   className='absolute right-3 top-1/2 transform -translate-y-1/2 text-[#64748b]'>
-                    {showPassword ?
-                      <EyeIcon className="w-5 h-5" />
-                      :
-                      <EyeSlashIcon className="w-5 h-5" />}
+                    {showPassword
+                      ?<EyeIcon className="w-5 h-5" />
+                      :<EyeSlashIcon className="w-5 h-5" />}
                 </button>
             </div>
           </div>
