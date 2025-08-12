@@ -1,4 +1,4 @@
-import ChartBar from '@/components/Chartbar'
+import ChartBar from '@/components/ChartBar'
 export default function TopBranch(){
     return(
         <div className="bg-[#ffffff]  text-[#112D4E] p-3 rounded-lg shadow-md hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out">

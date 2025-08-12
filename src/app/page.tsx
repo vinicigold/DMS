@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
-import OtpModal from '@/components/Otpmodal'
-import EmailModal from '@/components/Staffidmodal'
-import NewPassModal from '@/components/Newpassmodal'
+import OtpModal from '@/components/OtpModal'
+import EmailModal from '@/components/StaffIdModal'
+import NewPassModal from '@/components/NewPassModal'
 import { useRouter } from 'next/navigation'
 import { LockClosedIcon, EyeIcon, EyeSlashIcon, UserIcon, KeyIcon, DocumentDuplicateIcon} from '@heroicons/react/24/solid'
 
@@ -43,7 +43,7 @@ export default function Login() {
   }
 
   return (
-    <div className='min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-[#f9f7f7] via-[#f1f5f9] to-[#e2e8f0] relative'>
+    <div className='min-h-screen flex items-center justify-center px-4 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] relative overflow-hidden'>
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg

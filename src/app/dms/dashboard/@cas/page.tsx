@@ -1,4 +1,4 @@
-import ChartDoughnut from '@/components/Chartdoughnut'
+import ChartDoughnut from '@/components/ChartDoughnut'
 
 export default function ClientAccountSystem(){
     return(

@@ -64,11 +64,12 @@ const handleSubmit = (e: React.FormEvent) => {
   setIsLoading(true)
   setError('')
 
-  if (otp === '696969') {
-    onSubmit(otp)
-  } else {
-    alert('Invalid OTP. Please try again.')
-  }
+    if (otp === '696969') {
+        onSubmit(otp)
+    } else {
+        setError('Invalid OTP')
+    }
+    setIsLoading(false)
 }
 
 const handleResendOtp = () => {
