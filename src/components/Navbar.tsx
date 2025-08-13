@@ -1,5 +1,3 @@
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
 import { ChevronDownIcon, ChevronUpIcon, DocumentTextIcon, CircleStackIcon, ChartBarIcon, Cog6ToothIcon, FolderIcon, Squares2X2Icon, UserCircleIcon } from '@heroicons/react/24/solid'
 
@@ -125,8 +123,6 @@ const navItems: NavItem[] = [
 ]
 
 export default function Nav () {
-    // const pathname = usePathname()
-    // const [dropDownOpen, setDropDownOpen] = useState<number | null>(null)
     const [isUserDropDownOpen, setIsUserDropDownOpen] = useState(false)
     const [openCollapsibles, setOpenCollapsibles] = useState<Record<number, boolean>>(
         navItems.reduce<Record<number, boolean>>((acc, item) => {
@@ -137,112 +133,6 @@ export default function Nav () {
     const toggleCollapsible = (id: number) => {
         setOpenCollapsibles((prev) => ({...prev, [id]: !prev[id],}))
     }
-    // const navbarLink = [
-    //     {
-    //         id: 1,
-    //         name: 'Dashboard',
-    //         link: '/dms/dashboard'
-    //     },{
-    //         id: 2,
-    //         name: 'Document Management',
-    //         link: '/dms/documentmanagement'
-    //     },{
-    //         id: 3,
-    //         name: 'API Reference',
-    //         Children:[
-    //             {
-    //                 id: 31,
-    //                 name: 'Document Type',
-    //                 link: '/dms/apireferences/doctype'
-    //             },
-    //             {
-    //                 id: 32,
-    //                 name: 'File Type',
-    //                 link: '/dms/apireferences/filetype'
-    //             },
-    //             {
-    //                 id: 33,
-    //                 name: 'System Configuration',
-    //                 link: '/dms/apireferences/sysconfig'
-    //             }
-    //         ]
-    //     },{
-    //         id: 4,
-    //         name: 'Reports',
-    //         Children:[
-    //             {
-    //                 id: 41,
-    //                 name: 'Audit Trail',
-    //                 link: '/dms/apireferences/doctype'
-    //             }
-    //         ]
-    //     },{
-    //         id: 5,
-    //         name: 'System Utilities',
-    //         Children:[
-    //             {
-    //                 id: 51,
-    //                 name: 'Access Matrix',
-    //                 link: '/dms/apireferences/doctype'
-    //             },
-    //             {
-    //                 id: 52,
-    //                 name: 'Acess Object',
-    //                 link: '/dms/apireferences/filetype'
-    //             },
-    //             {
-    //                 id: 53,
-    //                 name: 'Access Role',
-    //                 link: '/dms/apireferences/sysconfig'
-    //             },
-    //             {
-    //                 id: 54,
-    //                 name: 'References',
-    //                 link: '/dms/apireferences/sysconfig'
-    //             },
-    //             {
-    //                 id: 55,
-    //                 name: 'System Parameters',
-    //                 link: '/dms/apireferences/sysconfig'
-    //             },
-    //             {
-    //                 id: 56,
-    //                 name: 'User Accounts',
-    //                 link: '/dms/systemutilities/useraccount'
-    //             }
-    //         ]
-    //     },{
-    //         id: 6,
-    //         name: 'INAI File Management',
-    //         Children:[
-    //             {
-    //                 id: 61,
-    //                 name: 'Directory Management',
-    //                 link: '/dms/apireferences/doctype'
-    //             },
-    //             {
-    //                 id: 62,
-    //                 name: 'Upload Files',
-    //                 link: '/dms/apireferences/filetype'
-    //             },
-    //             {
-    //                 id: 63,
-    //                 name: 'Transmitted Files',
-    //                 link: '/dms/apireferences/sysconfig'
-    //             },
-    //             {
-    //                 id: 64,
-    //                 name: 'Failed Upload',
-    //                 link: '/dms/apireferences/sysconfig'
-    //             },
-    //             {
-    //                 id: 65,
-    //                 name: 'Logs View History',
-    //                 link: '/dms/apireferences/sysconfig'
-    //             }
-    //         ]
-    //     }
-    // ]
 
     return (
         <aside className='hidden w-64 flex-col border-r bg-white text-[#112D4E] sm:flex hide-scrollbar'>

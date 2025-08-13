@@ -8,7 +8,6 @@ export default function UserAccounts() {
         <h1 className="text-2xl font-bold text-[#112D4E] underline">System Utilities</h1>
         <p className="text-gray-600">User Account Management</p>
       </div>
-
       <UserAccountsTable />
     </div>
   )
