@@ -64,10 +64,6 @@ export default function UserAccountTable() {
     const [users, setUsers] = useState<User[]>(userData)
     const [showAddModal, setShowAddModal] = useState(false)
 
-    const handleAddUser = () => {
-        setShowAddModal(false)
-    }
-
     const handleEdit = (userId: number) => {
         console.log("Edit user:", userId)
     }
@@ -173,7 +169,7 @@ export default function UserAccountTable() {
                     </tbody>
                 </table>
             </div>
-            <AddUserModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSubmit={handleAddUser} />
+            <AddUserModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} />
         </div>
     )
 }

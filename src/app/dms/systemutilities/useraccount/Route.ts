@@ -7,10 +7,23 @@ interface StaffInfo {
     MobileNumber: string
     DateOfBirth: string
 }
+interface RegisterUserPayload {
+    staffID: string
+    firstname: string
+    middlename: string
+    lastname: string
+    email: string
+    mobilenumber: string
+    dateofbirth: string
+    employeeStatusId: number
+    roleId: number
+    accountStatusId: number
+}
 
 export async function GetUserInfo(staffId: string): Promise<StaffInfo | null> {
     try{
-        const res = await fetch("http://localhost:4000/dms/getuserinfo", {
+        const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
+        const res = await fetch(`${API_BASE}/dms/getuserinfo`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
         body: JSON.stringify({staffId}), 
@@ -26,5 +39,26 @@ export async function GetUserInfo(staffId: string): Promise<StaffInfo | null> {
     }catch(err){
         console.error("Error fetching staff info", err)
         return null
+    }
+}
+export async function RegisterUser(payload: RegisterUserPayload): Promise<boolean> {
+    try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+        const res = await fetch(`${API_BASE}/dms/registeruser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+        console.error("Failed to register user");
+        return false;
+        }
+
+        console.log("User registered successfully");
+        return true;
+    }catch (err) {
+        console.error("Error registering user", err);
+        return false;
     }
 }

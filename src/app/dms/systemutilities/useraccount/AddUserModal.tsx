@@ -1,111 +1,156 @@
 'use client'
 import type React from 'react'
 import { useState } from 'react'
-import { GetUserInfo } from './Route'
+import { GetUserInfo, RegisterUser } from './Route'
 import { XMarkIcon, UserPlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 
-interface User {
-    username: string
-    staffId: string
-    fullName: string
-    institution: string
-    role: string
-    email: string
-    mobileNumber: string
-    status: 'Active' | 'Inactive' | 'Locked'
-    dateLocked?: string
-    functions: string
+type RoleOption = {
+    id: number
+    name: string
 }
+
+const roleOptions: RoleOption[] = [
+    { id: 1, name: 'Super Admin' },
+    { id: 2, name: 'Institution Admin' },
+    { id: 3, name: 'Institution User' },
+]
+
+type EmployeeStatus = {
+    id: number
+    name: string
+}
+
+const empStatusId: EmployeeStatus[] = [
+    { id: 1, name: 'Probitionary' },
+    { id: 2, name: 'Regular' },
+    { id: 3, name: 'Contractual' },
+    { id: 4, name: 'On Leave' },
+    { id: 5, name: 'Reinstated' },
+    { id: 6, name: 'Resigned' },
+    { id: 7, name: 'Terminated' },
+    { id: 8, name: 'Retired' },
+    { id: 9, name: 'Deceased' },
+    { id: 10, name: 'Suspended' },
+]
+
+type AccountStatus = {
+    id: number
+    name: string
+}
+
+const accountStatusId: AccountStatus[] = [
+    { id: 1, name: 'New' },
+    { id: 2, name: 'Active' },
+    { id: 3, name: 'Inactive' },
+    { id: 4, name: 'Locked' },
+    { id: 5, name: 'Expired' },
+    { id: 6, name: 'Deactivated' },
+    { id: 7, name: 'Reset' },
+]
 
 interface AddUserModalProps {
     readonly isOpen: boolean
     readonly onClose: () => void
-    readonly onSubmit: (user: Omit<User, 'id'>) => void
 }
 
-export default function AddUserModal({ isOpen, onClose, onSubmit }: AddUserModalProps) {
+export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
     const [formData, setFormData] = useState({
-        staffId: '',
+        staffID: '',
         firstName: '',
         middleName: '',
         lastName: '',
-        userRole: '',
-        userStatus: 'Active' as 'Active' | 'Inactive',
+        userRole: 0,
+        userStatus: 0,
         email: '',
         mobileNumber: '',
         birthdate: '',
-        institution: 'CARD MRI',
+        employeeStatusId: 0,
     })
+    const initialFormData = {
+        staffID: '',
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        email: '',
+        mobileNumber: '',
+        birthdate: '',
+        userRole: 0,
+        userStatus: 0,
+        employeeStatusId: 0
+    }
+
+    const handleClose = () => {
+        setFormData(initialFormData)
+        onClose()
+    }
+
     const [isLoading, setIsLoading] = useState(false)
     const [isSearching, setIsSearching] = useState(false)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
-        setFormData((prev) => ({ ...prev, [name]: value }))
+        setFormData((prev) => ({ ...prev, [name]: ['userRole', 'employeeStatusId', 'userStatus'].includes(name) ? parseInt(value,10) : value }))
     }
 
     const handleSearch = async () => {
-        if(!formData.staffId.trim()) return
+        if(!formData.staffID.trim()) return
 
         setIsSearching(true)
 
-        const staffInfo = await GetUserInfo(formData.staffId)
-        console.log("Fetched from backend:", staffInfo)
+        const staffInfo = await GetUserInfo(formData.staffID)
 
         if(staffInfo) {
             setFormData(prev => ({
                 ...prev,
-                firstName: staffInfo.FirstName || "",
-                middleName: staffInfo.MiddleName || "",
-                lastName: staffInfo.LastName || "",
-                email: staffInfo.Email || "",
-                mobileNumber: staffInfo.MobileNumber || "",
-                birthdate: staffInfo.DateOfBirth || ""
+                firstName: staffInfo.FirstName || '',
+                middleName: staffInfo.MiddleName || '',
+                lastName: staffInfo.LastName || '',
+                email: staffInfo.Email || '',
+                mobileNumber: staffInfo.MobileNumber || '',
+                birthdate: staffInfo.DateOfBirth || ''
             }))
         } else {
-            console.warn("No staff info found for this ID")
+            console.warn('No staff info found for this ID')
         }
         setIsSearching(false)
+
+        setFormData(prev => ({
+            ...prev,
+            userRole: 0,
+            userStatus: 0,
+            employeeStatusId: 0
+        }));
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        const formattedBirthdate = formData.birthdate
+            ? new Date(formData.birthdate).toISOString().replace(/\.\d{3}Z$/, "Z")
+            : new Date().toISOString().replace(/\.\d{3}Z$/, "Z")
 
-        const fullName = `${formData.firstName} ${formData.middleName} ${formData.lastName}`.trim()
-        const username = `${formData.firstName.toLowerCase()}${formData.lastName.toLowerCase()}`
-
-        const newUser: Omit<User, 'id'> = {
-            functions: formData.userRole,
-            username: username,
-            staffId: formData.staffId,
-            fullName: fullName,
-            institution: formData.institution,
-            role: formData.userRole,
+        const userPayload = {
+            staffID: formData.staffID,
+            firstname: formData.firstName,
+            middlename: formData.middleName,
+            lastname: formData.lastName,
             email: formData.email,
-            mobileNumber: formData.mobileNumber,
-            status: formData.userStatus,
+            mobilenumber: formData.mobileNumber, 
+            dateofbirth: formattedBirthdate,
+            employeeStatusId: formData.employeeStatusId,
+            roleId: formData.userRole,
+            accountStatusId: formData.userStatus,
         }
 
-        onSubmit(newUser)
+        console.log('Submitting user:', userPayload)
+        const success = await RegisterUser(userPayload)
+
         setIsLoading(false)
 
-        // Reset form
-        setFormData({
-            staffId: '',
-            firstName: '',
-            middleName: '',
-            lastName: '',
-            userRole: '',
-            userStatus: 'Active',
-            email: '',
-            mobileNumber: '',
-            birthdate: '',
-            institution: 'CARD MRI',
-        })
+        if(success){
+            setFormData(initialFormData)
+        }
     }
 
     if (!isOpen) return null
@@ -124,7 +169,7 @@ export default function AddUserModal({ isOpen, onClose, onSubmit }: AddUserModal
                     </div>
                 </div>
                 <button
-                    onClick={onClose}
+                    onClick={handleClose}
                     className='w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors'>
                         <XMarkIcon className='w-4 h-4 text-gray-600' />
                 </button>
@@ -134,15 +179,15 @@ export default function AddUserModal({ isOpen, onClose, onSubmit }: AddUserModal
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                         <div className='space-y-4'>
                             <div>
-                                <label htmlFor='staffId' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
+                                <label htmlFor='staffID' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
                                     Staff ID *
                                 </label>
                                 <div className='flex gap-2'>
                                     <input
                                         type='text'
-                                        id='staffId'
-                                        name='staffId'
-                                        value={formData.staffId}
+                                        id='staffID'
+                                        name='staffID'
+                                        value={formData.staffID}
                                         onChange={handleChange}
                                         required
                                         className='flex-1 px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'
@@ -157,57 +202,43 @@ export default function AddUserModal({ isOpen, onClose, onSubmit }: AddUserModal
                                             {isSearching ? (
                                                 <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
                                             ) : (
-                                                <MagnifyingGlassIcon className="w-4 h-4" />
+                                                <MagnifyingGlassIcon className='w-4 h-4' />
                                             )}
                                     </button>
                                 </div>
                             </div>
 
                             <div>
-                                <label htmlFor='firstName' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
+                                <p className='block text-[#112D4E] font-semibold mb-2 text-sm'>
                                     First Name *
-                                </label>
-                                <input
-                                    type='text'
-                                    id='firstName'
-                                    name='firstName'
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                    required
-                                    className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'
-                                    placeholder='Enter first name'
-                                />
+                                </p>
+                                <p className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+                                    ${formData.firstName ? "text-[#112D4E] bg-gray-200" : "text-gray-400 bg-white"}
+                                    min-h-[48px] flex items-center`}>
+                                        {formData.firstName}
+                                </p>
                             </div>
 
                             <div>
-                                <label htmlFor='middleName' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
+                                <p className='block text-[#112D4E] font-semibold mb-2 text-sm'>
                                     Middle Name
-                                </label>
-                                <input
-                                    type='text'
-                                    id='middleName'
-                                    name='middleName'
-                                    value={formData.middleName}
-                                    onChange={handleChange}
-                                    className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'
-                                    placeholder='Enter middle name'
-                                />
+                                </p>
+                                <p className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+                                    ${formData.middleName ? 'text-[#112D4E] bg-gray-200' : 'text-gray-400 bg-white'}
+                                    min-h-[48px] flex items-center`}>
+                                        {formData.middleName}
+                                </p>
                             </div>
 
                             <div>
-                                <label htmlFor='lastName' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
+                                <p className='block text-[#112D4E] font-semibold mb-2 text-sm'>
                                     Last Name *
-                                </label>
-                                <input
-                                    type='text'
-                                    id='lastName'
-                                    name='lastName'
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                    required
-                                    className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'
-                                    placeholder='Enter last name'
-                                />
+                                </p>
+                                <p className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+                                    ${formData.lastName ? 'text-[#112D4E] bg-gray-200' : 'text-gray-400 bg-white'}
+                                    min-h-[48px] flex items-center`}>
+                                        {formData.lastName}
+                                </p>
                             </div>
 
                             <div>
@@ -222,76 +253,67 @@ export default function AddUserModal({ isOpen, onClose, onSubmit }: AddUserModal
                                     required
                                     className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'>
                                         <option value=''>Select role</option>
-                                        <option value='System Admin'>System Admin</option>
-                                        <option value='Document Manager'>Document Manager</option>
-                                        <option value='Regular User'>Regular User</option>
-                                        <option value='Viewer'>Viewer</option>
+                                        {roleOptions.map((role) => (
+                                            <option key={role.id} value={role.id}>
+                                                {role.name}
+                                            </option>
+                                        ))}
                                 </select>
                             </div>
                         </div>
 
                         <div className='space-y-4'>
                             <div>
-                                <label htmlFor='email' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
+                                <p className='block text-[#112D4E] font-semibold mb-2 text-sm'>
                                     Email Address *
-                                </label>
-                                <input
-                                    type='email'
-                                    id='email'
-                                    name='email'
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'
-                                    placeholder='Enter email address'
-                                />
+                                </p>
+                                <p className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+                                    ${formData.email ? 'text-[#112D4E] bg-gray-200' : 'text-gray-400 bg-white'}
+                                    min-h-[48px] flex items-center`}>
+                                        {formData.email}
+                                </p>
                             </div>
 
                             <div>
-                                <label htmlFor='mobileNumber' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
+                                <p className='block text-[#112D4E] font-semibold mb-2 text-sm'>
                                     Mobile Number *
-                                </label>
-                                <input
-                                    type='tel'
-                                    id='mobileNumber'
-                                    name='mobileNumber'
-                                    value={formData.mobileNumber}
-                                    onChange={handleChange}
-                                    required
-                                    className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'
-                                    placeholder='0912 345 6789'
-                                />
+                                </p>
+                                <p className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+                                    ${formData.mobileNumber ? 'text-[#112D4E] bg-gray-200' : 'text-gray-400 bg-white'}
+                                    min-h-[48px] flex items-center`}>
+                                        {formData.mobileNumber}
+                                </p>
                             </div>
 
                             <div>
-                                <label htmlFor='birthdate' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
+                                <p className='block text-[#112D4E] font-semibold mb-2 text-sm'>
                                     Birthdate *
-                                </label>
-                                <input
-                                    type='date'
-                                    id='birthdate'
-                                    name='birthdate'
-                                    value={formData.birthdate}
-                                    onChange={handleChange}
-                                    required
-                                    className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'
-                                />
+                                </p>
+                                <p className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+                                    ${formData.birthdate ? 'text-[#112D4E] bg-gray-200' : 'text-gray-400 bg-white'}
+                                    min-h-[48px] flex items-center`}>
+                                        {formData.birthdate}
+                                </p>
                             </div>
 
                             <div>
-                                <label htmlFor='institution' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
-                                    Institution *
+                                <label htmlFor='employeeStatusId' className='block text-[#112D4E] font-semibold mb-2 text-sm'>
+                                    Employee Status *
                                 </label>
-                                <input
-                                    type='text'
-                                    id='institution'
-                                    name='institution'
-                                    value={formData.institution}
+                                <select
+                                    id='employeeStatusId'
+                                    name='employeeStatusId'
+                                    value={formData.employeeStatusId}
                                     onChange={handleChange}
                                     required
-                                    className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'
-                                    placeholder='Enter institution'
-                                />
+                                    className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'>
+                                        <option value=''>Employee Status</option>
+                                        {empStatusId.map((empStatus) => (
+                                            <option key={empStatus.id} value={empStatus.id}>
+                                                {empStatus.name}
+                                            </option>
+                                        ))}
+                                </select>
                             </div>
 
                             <div>
@@ -305,9 +327,12 @@ export default function AddUserModal({ isOpen, onClose, onSubmit }: AddUserModal
                                     onChange={handleChange}
                                     required
                                     className='w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200'>
-                                        <option value='Active'>Active</option>
-                                        <option value='Inactive'>Inactive</option>
-                                        <option value='Locked'>Locked</option>
+                                        <option value=''>User Status</option>
+                                        {accountStatusId.map((accStatus) => (
+                                            <option key={accStatus.id} value={accStatus.id}>
+                                                {accStatus.name}
+                                            </option>
+                                        ))}
                                 </select>
                             </div>
                         </div>
