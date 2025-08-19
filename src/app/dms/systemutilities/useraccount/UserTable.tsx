@@ -1,7 +1,8 @@
 "use client"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { PencilIcon, TrashIcon, UserPlusIcon } from "@heroicons/react/24/solid"
 import AddUserModal from "./AddUserModal"
+import { UserAccountsTable } from "@/service/systemutilities/useraccount/table/UserAccountTable"
 
 interface User {
 	id: number
@@ -9,59 +10,42 @@ interface User {
 	staffId: string
 	fullName: string
 	institution: string
-	role: string
+	rolename: string
 	email: string
 	mobileNumber: string
 	status: "Active" | "Disable"
+	passwordExpirationDate?: string
 	dateLocked: string
 	functions: string
 }
 
-const userData: User[] = [
-	{
-		id: 1,
-		username: "mangkanor",
-		staffId: "20250755206",
-		fullName: "Roborat",
-		institution: "CARD MRI",
-		role: "System Admin",
-		email: "ramburat@example.com",
-		mobileNumber: "+63 912 345 6789",
-		status: "Active",
-		dateLocked: "2025-01-10",
-		functions: "Administrator",
-	},
-	{
-		id: 2,
-		username: "sinukmane",
-		staffId: "20250755207",
-		fullName: "Tamodachi",
-		institution: "CARD MRI",
-		role: "Document Manager",
-		email: "moda@xample.com",
-		mobileNumber: "+63 912 345 6790",
-		status: "Active",
-		dateLocked: "2025-01-10",
-		functions: "Document Manager",
-	},
-	{
-		id: 3,
-		username: "testicles",
-		staffId: "20250755208",
-		fullName: "Durex",
-		institution: "CARD MRI",
-		role: "Regular User",
-		email: "Durex.thin@xample.com",
-		mobileNumber: "+63 912 345 6791",
-		status: "Disable",
-		dateLocked: "2025-01-10",
-		functions: "User",
-	},
-]
-
-export default function UserAccountTable() {
-	const [users, setUsers] = useState<User[]>(userData)
+export default function UserTable() {
+	const [users, setUsers] = useState<User[]>([])
 	const [showAddModal, setShowAddModal] = useState(false)
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const res = await UserAccountsTable({ limit: 10, offset: 0 })
+			const mappedUsers: User[] =
+				res?.users?.map((u, index) => ({
+					id: index + 1,
+					username: u.username,
+					staffId: u.staffID,
+					fullName: u.fullName,
+					institution: u.institution,
+					rolename: u.rolename,
+					email: u.email,
+					mobileNumber: u.mobileNumber,
+					status: u.status === "Active" ? "Active" : "Disable",
+					passwordExpirationDate: u.passwordExpirationDate,
+					dateLocked: "-",
+					functions: u.rolename,
+				})) ?? []
+
+			setUsers(mappedUsers)
+		}
+		fetchData()
+	}, [])
 
 	const handleEdit = (userId: number) => {
 		console.log("Edit user:", userId)
@@ -121,6 +105,9 @@ export default function UserAccountTable() {
 							<th className="px-3 py-2 text-left font-semibold">Email</th>
 							<th className="px-3 py-2 text-left font-semibold">Mobile</th>
 							<th className="px-3 py-2 text-left font-semibold">Status</th>
+							<th className="px-3 py-2 text-left font-semibold">
+								Password Expiration
+							</th>
 							<th className="px-3 py-2 text-left font-semibold">Date Locked</th>
 							<th className="px-3 py-2 text-center font-semibold">Function</th>
 						</tr>
@@ -136,13 +123,22 @@ export default function UserAccountTable() {
 								<td className="px-3 py-2">{user.staffId}</td>
 								<td className="px-3 py-2">{user.fullName}</td>
 								<td className="px-3 py-2">{user.institution}</td>
-								<td className="px-3 py-2">{user.role}</td>
+								<td className="px-3 py-2">{user.rolename}</td>
 								<td className="px-3 py-2">{user.email}</td>
 								<td className="px-3 py-2">{user.mobileNumber}</td>
 								<td className="px-3 py-2">
 									<span className={getStatusBadge(user.status)}>
 										{user.status}
 									</span>
+								</td>
+								<td className="px-3 py-2">
+									{user.passwordExpirationDate
+										? new Date(user.passwordExpirationDate)
+												.toISOString()
+												.replace("T", " ")
+												.replace("Z", "")
+												.split(".")[0]
+										: "-"}
 								</td>
 								<td className="px-3 py-2">{user.dateLocked || "-"}</td>
 								<td className="px-3 py-2">
@@ -167,19 +163,14 @@ export default function UserAccountTable() {
 													: "Activate User"
 											}
 											className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none
-                                                ${
-																									user.status === "Active"
-																										? "bg-[#3F72AF] hover:bg-[#112D4E]"
-																										: "bg-gray-300 hover:bg-gray-400"
-																								}`}>
+											${
+												user.status === "Active"
+													? "bg-[#3F72AF] hover:bg-[#112D4E]"
+													: "bg-gray-300 hover:bg-gray-400"
+											}`}>
 											<span
 												className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200
-                                                        ${
-																													user.status ===
-																													"Active"
-																														? "translate-x-6"
-																														: "translate-x-1"
-																												}`}
+												${user.status === "Active" ? "translate-x-6" : "translate-x-1"}`}
 											/>
 										</button>
 									</div>

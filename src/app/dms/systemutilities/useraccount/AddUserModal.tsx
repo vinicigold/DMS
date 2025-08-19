@@ -1,56 +1,15 @@
 "use client"
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { GetUserInfo, RegisterUser } from "./Route"
 import {
 	XMarkIcon,
 	UserPlusIcon,
 	MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid"
-
-type RoleOption = {
-	id: number
-	name: string
-}
-
-const roleOptions: RoleOption[] = [
-	{ id: 1, name: "Super Admin" },
-	{ id: 2, name: "Institution Admin" },
-	{ id: 3, name: "Institution User" },
-]
-
-type EmployeeStatus = {
-	id: number
-	name: string
-}
-
-const empStatusId: EmployeeStatus[] = [
-	{ id: 1, name: "Probitionary" },
-	{ id: 2, name: "Regular" },
-	{ id: 3, name: "Contractual" },
-	{ id: 4, name: "On Leave" },
-	{ id: 5, name: "Reinstated" },
-	{ id: 6, name: "Resigned" },
-	{ id: 7, name: "Terminated" },
-	{ id: 8, name: "Retired" },
-	{ id: 9, name: "Deceased" },
-	{ id: 10, name: "Suspended" },
-]
-
-type AccountStatus = {
-	id: number
-	name: string
-}
-
-const accountStatusId: AccountStatus[] = [
-	{ id: 1, name: "New" },
-	{ id: 2, name: "Active" },
-	{ id: 3, name: "Inactive" },
-	{ id: 4, name: "Locked" },
-	{ id: 5, name: "Expired" },
-	{ id: 6, name: "Deactivated" },
-	{ id: 7, name: "Reset" },
-]
+import { EmployeeStatus } from "@/service/systemutilities/useraccount/dropdown/EmployeeStatus"
+import { UserRole } from "@/service/systemutilities/useraccount/dropdown/UserRole"
+import { UserStatus } from "@/service/systemutilities/useraccount/dropdown/UserStatus"
 
 interface AddUserModalProps {
 	readonly isOpen: boolean
@@ -90,6 +49,52 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 
 	const [isLoading, setIsLoading] = useState(false)
 	const [isSearching, setIsSearching] = useState(false)
+
+	const [roleOptions, setRoleOptions] = useState<
+		{ id: number; name: string }[]
+	>([])
+	const [empStatusOptions, setEmpStatusOptions] = useState<
+		{ id: number; name: string }[]
+	>([])
+	const [accountStatusOptions, setAccountStatusOptions] = useState<
+		{ id: number; name: string }[]
+	>([])
+
+	useEffect(() => {
+		const fetchDropDown = async () => {
+			try {
+				const [roles, empStatuses, userStatuses] = await Promise.all([
+					UserRole(),
+					EmployeeStatus(),
+					UserStatus(),
+				])
+
+				setRoleOptions(
+					roles.map((r) => ({
+						id: r.RoleID,
+						name: r.Name,
+					}))
+				)
+
+				setEmpStatusOptions(
+					empStatuses.map((e) => ({
+						id: e.EmployeeStatusID,
+						name: e.Name,
+					}))
+				)
+
+				setAccountStatusOptions(
+					userStatuses.map((u) => ({
+						id: u.AccountStatusID,
+						name: u.Name,
+					}))
+				)
+			} catch (error) {
+				console.error("error fetching dropdown", error)
+			}
+		}
+		fetchDropDown()
+	}, [])
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -224,13 +229,12 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 									First Name *
 								</p>
 								<p
-									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200 min-h-[48px] flex items-center
                                     ${
 																			formData.firstName
 																				? "text-[#112D4E] bg-gray-200"
 																				: "text-gray-400 bg-white"
-																		}
-                                    min-h-[48px] flex items-center`}>
+																		}`}>
 									{formData.firstName}
 								</p>
 							</div>
@@ -239,13 +243,12 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 									Middle Name
 								</p>
 								<p
-									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200 min-h-[48px] flex items-center
                                     ${
 																			formData.middleName
 																				? "text-[#112D4E] bg-gray-200"
 																				: "text-gray-400 bg-white"
-																		}
-                                    min-h-[48px] flex items-center`}>
+																		}`}>
 									{formData.middleName}
 								</p>
 							</div>
@@ -254,13 +257,12 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 									Last Name *
 								</p>
 								<p
-									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200 min-h-[48px] flex items-center
                                     ${
 																			formData.lastName
 																				? "text-[#112D4E] bg-gray-200"
 																				: "text-gray-400 bg-white"
-																		}
-                                    min-h-[48px] flex items-center`}>
+																		}`}>
 									{formData.lastName}
 								</p>
 							</div>
@@ -292,13 +294,12 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 									Email Address *
 								</p>
 								<p
-									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200 min-h-[48px] flex items-center
                                     ${
 																			formData.email
 																				? "text-[#112D4E] bg-gray-200"
 																				: "text-gray-400 bg-white"
-																		}
-                                    min-h-[48px] flex items-center`}>
+																		}`}>
 									{formData.email}
 								</p>
 							</div>
@@ -307,13 +308,12 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 									Mobile Number *
 								</p>
 								<p
-									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200 min-h-[48px] flex items-center
                                     ${
 																			formData.mobileNumber
 																				? "text-[#112D4E] bg-gray-200"
 																				: "text-gray-400 bg-white"
-																		}
-                                    min-h-[48px] flex items-center`}>
+																		}`}>
 									{formData.mobileNumber}
 								</p>
 							</div>
@@ -322,13 +322,12 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 									Birthdate *
 								</p>
 								<p
-									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200
+									className={`w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] transition-all duration-200 min-h-[48px] flex items-center
                                     ${
 																			formData.birthdate
 																				? "text-[#112D4E] bg-gray-200"
 																				: "text-gray-400 bg-white"
-																		}
-                                    min-h-[48px] flex items-center`}>
+																		}`}>
 									{formData.birthdate}
 								</p>
 							</div>
@@ -346,7 +345,7 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 									required
 									className="w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200">
 									<option value="">Employee Status</option>
-									{empStatusId.map((empStatus) => (
+									{empStatusOptions.map((empStatus) => (
 										<option key={empStatus.id} value={empStatus.id}>
 											{empStatus.name}
 										</option>
@@ -368,7 +367,7 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 									required
 									className="w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200">
 									<option value="">User Status</option>
-									{accountStatusId.map((accStatus) => (
+									{accountStatusOptions.map((accStatus) => (
 										<option key={accStatus.id} value={accStatus.id}>
 											{accStatus.name}
 										</option>

@@ -1,18 +1,11 @@
 "use client"
 import { useState } from "react"
 import OtpModal from "@/components/OtpModal"
-import EmailModal from "@/components/StaffIdModal"
+import TwoFactorQRModal from "@/components/TwoFactorQRModal"
 import NewPassModal from "@/components/NewPassModal"
 import { useRouter } from "next/navigation"
-import {
-	LockClosedIcon,
-	EyeIcon,
-	EyeSlashIcon,
-	UserIcon,
-	KeyIcon,
-	DocumentDuplicateIcon,
-} from "@heroicons/react/24/solid"
-import { LoginUser } from "./service/login/LoginUser"
+import { Building2, User, Lock, Eye, EyeOff, KeyRound } from "lucide-react"
+import { LoginUser } from "../service/login/LoginUser"
 
 export default function Login() {
 	const [signIn, setSignIn] = useState({
@@ -23,8 +16,8 @@ export default function Login() {
 	const router = useRouter()
 	const [showPassword, setShowPassword] = useState(false)
 	const [showStaffIdModal, setShowStaffIdModal] = useState(false)
-	const [isInvalidStaffId, setIsInvalidStaffId] = useState(false)
 	const [showOtpModal, setShowOtpModal] = useState(false)
+	const [showQRModal, setShowQRModal] = useState(false)
 	const [forOtpReset, setForOtpReset] = useState(false)
 	const [showNewPassModal, setShowNewPassModal] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
@@ -50,35 +43,24 @@ export default function Login() {
 			setIsLoading(false)
 			return
 		}
-		router.push("/dms/dashboard")
 		setForOtpReset(false)
-		setShowOtpModal(false)
-
+		setShowOtpModal(true)
 		setIsLoading(false)
-
-		// if (signIn.username === "admin" && signIn.password === "admin") {
-		// 	setForOtpReset(false)
-		// 	setShowOtpModal(true)
-		// } else {
-		// 	setSignIn({ username: "", password: "" })
-		// 	setError("Invalid username or password")
-		// }
-		// setIsLoading(false)
 	}
 
 	return (
 		<div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] relative overflow-hidden">
 			<div
 				className={`w-full max-w-md bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 z-10 transition-all duration-500
-      ${
-				showStaffIdModal || showOtpModal || showNewPassModal
-					? "blur-sm scale-[0.98] opacity-80"
-					: "hover:shadow-3xl"
-			}`}>
+      			${
+							showStaffIdModal || showOtpModal || showNewPassModal
+								? "blur-sm scale-[0.98] opacity-80"
+								: "hover:shadow-3xl"
+						}`}>
 				<form onSubmit={handleSubmit} className="w-full">
 					<div className="text-center mb-8">
 						<div className="w-20 h-20 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-							<DocumentDuplicateIcon className="w-10 h-10 text-white" />
+							<Building2 className="w-10 h-10 text-white" />
 						</div>
 						<h2 className="text-3xl font-bold text-[#112D4E] mb-2">
 							Document Management System
@@ -99,7 +81,7 @@ export default function Login() {
 							Username
 						</label>
 						<div className="relative">
-							<UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-5 h-5" />
+							<User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-5 h-5" />
 							<input
 								type="text"
 								id="username"
@@ -120,7 +102,7 @@ export default function Login() {
 							Password
 						</label>
 						<div className="relative">
-							<LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-5 h-5" />
+							<Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-5 h-5" />
 							<input
 								type={showPassword ? "text" : "password"}
 								id="password"
@@ -137,9 +119,9 @@ export default function Login() {
 								onClick={() => setShowPassword(!showPassword)}
 								className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#64748b]">
 								{showPassword ? (
-									<EyeIcon className="w-5 h-5" />
+									<Eye className="w-5 h-5" />
 								) : (
-									<EyeSlashIcon className="w-5 h-5" />
+									<EyeOff className="w-5 h-5" />
 								)}
 							</button>
 						</div>
@@ -156,7 +138,7 @@ export default function Login() {
 							</>
 						) : (
 							<>
-								<KeyIcon className="w-5 h-5" />
+								<KeyRound className="w-5 h-5" />
 								Sign In
 							</>
 						)}
@@ -171,25 +153,10 @@ export default function Login() {
 					</div>
 				</form>
 			</div>
-			{showStaffIdModal && (
-				<EmailModal
-					isOpen={showStaffIdModal}
-					onClose={() => {
-						setShowStaffIdModal(false)
-						setIsInvalidStaffId(false)
-					}}
-					onSubmit={(submittedStaffId) => {
-						console.log("Submitted Staff ID:", submittedStaffId)
-						setShowStaffIdModal(false)
-						setForOtpReset(true)
-						setShowOtpModal(true)
-					}}
-					error={isInvalidStaffId}
-				/>
-			)}
 			{showOtpModal && (
 				<OtpModal
 					isOpen={showOtpModal}
+					username={signIn.username}
 					onClose={() => {
 						setShowOtpModal(false)
 						setForOtpReset(false)
@@ -201,8 +168,23 @@ export default function Login() {
 							setForOtpReset(false)
 							setShowNewPassModal(true)
 						} else {
-							router.push("/dms/dashboard")
+							setShowQRModal(true)
 						}
+					}}
+				/>
+			)}
+			{showQRModal && (
+				<TwoFactorQRModal
+					isOpen={showQRModal}
+					onClose={() => {
+						setShowQRModal(false)
+						setForOtpReset(false)
+					}}
+					onSubmit={(otp) => {
+						console.log("Submitted OTP:", otp)
+						setShowOtpModal(false)
+						setShowQRModal(false)
+						router.push("dms/dashboard")
 					}}
 				/>
 			)}

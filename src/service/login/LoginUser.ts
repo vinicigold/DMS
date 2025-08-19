@@ -13,6 +13,17 @@ export async function LoginUser(login: LoginUserPayload): Promise<boolean> {
 			credentials: "include",
 		})
 
+		if (res.ok) {
+			const data = await res.json()
+
+			if (data.message) {
+				localStorage.setItem("authToken", data.message)
+				console.log("token stored in the local storage", data.message)
+			}
+		} else {
+			console.error("login failed", await res.text())
+		}
+
 		if (!res.ok) {
 			console.error("failed to login")
 			return false

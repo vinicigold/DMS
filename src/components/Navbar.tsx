@@ -1,15 +1,15 @@
 import React, { useState } from "react"
 import {
-	ChevronDownIcon,
-	ChevronUpIcon,
-	DocumentTextIcon,
-	CircleStackIcon,
-	ChartBarIcon,
-	Cog6ToothIcon,
-	FolderIcon,
-	Squares2X2Icon,
-	UserCircleIcon,
-} from "@heroicons/react/24/solid"
+	ChevronDown,
+	ChevronUp,
+	LayoutDashboard,
+	File,
+	Database,
+	ChartBarIncreasing,
+	Settings,
+	FolderClosed,
+	CircleUser,
+} from "lucide-react"
 import Link from "next/link"
 
 interface NavItem {
@@ -25,18 +25,18 @@ const navItems: NavItem[] = [
 		id: 1,
 		name: "Dashboard",
 		link: "/dms/dashboard",
-		icon: Squares2X2Icon,
+		icon: LayoutDashboard,
 	},
 	{
 		id: 2,
 		name: "Document Management",
 		link: "/dms/documentmanagement",
-		icon: DocumentTextIcon,
+		icon: File,
 	},
 	{
 		id: 3,
 		name: "API Reference",
-		icon: CircleStackIcon,
+		icon: Database,
 		Children: [
 			{
 				id: 31,
@@ -58,7 +58,7 @@ const navItems: NavItem[] = [
 	{
 		id: 4,
 		name: "Reports",
-		icon: ChartBarIcon,
+		icon: ChartBarIncreasing,
 		Children: [
 			{
 				id: 41,
@@ -70,7 +70,7 @@ const navItems: NavItem[] = [
 	{
 		id: 5,
 		name: "System Utilities",
-		icon: Cog6ToothIcon,
+		icon: Settings,
 		Children: [
 			{
 				id: 51,
@@ -85,7 +85,7 @@ const navItems: NavItem[] = [
 			{
 				id: 53,
 				name: "Access Role",
-				link: "/dms/apireferences/sysconfig",
+				link: "/dms/systemutilities/accessrole",
 			},
 			{
 				id: 54,
@@ -107,7 +107,7 @@ const navItems: NavItem[] = [
 	{
 		id: 6,
 		name: "INAI File Management",
-		icon: FolderIcon,
+		icon: FolderClosed,
 		Children: [
 			{
 				id: 61,
@@ -154,7 +154,7 @@ export default function Nav() {
 
 	return (
 		<aside className="hidden w-64 flex-col border-r bg-white text-[#112D4E] sm:flex hide-scrollbar">
-			<nav className="flex flex-1 flex-col gap-1 font-bold overflow-auto p-2 hide-scrollbar">
+			<nav className="flex flex-1 flex-col gap-1 font-semibold overflow-auto p-2 hide-scrollbar">
 				{navItems.map((item) => (
 					<div key={item.id}>
 						{item.Children ? (
@@ -165,7 +165,7 @@ export default function Nav() {
 									onClick={() => toggleCollapsible(item.id)}>
 									{item.icon && <item.icon className="size-4" />}
 									<span>{item.name}</span>
-									<ChevronDownIcon
+									<ChevronDown
 										className={`ml-auto size-4 transition-transform ${
 											openCollapsibles[item.id] ? "rotate-180" : ""
 										}`}
@@ -173,7 +173,7 @@ export default function Nav() {
 								</button>
 
 								{openCollapsibles[item.id] && (
-									<ul className="mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-gray-200 px-2.5 py-0.5">
+									<ul className="mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 font-normal border-l border-gray-200 px-2.5 py-0.5">
 										{item.Children.map((subItem) => (
 											<li key={subItem.id}>
 												<Link
@@ -202,14 +202,14 @@ export default function Nav() {
 				<button
 					onClick={() => setIsUserDropDownOpen(!isUserDropDownOpen)}
 					className="flex w-full items-center justify-start gap-2 h-12 px-3 rounded-md hover:bg-blue-50 focus:outline-none    ">
-					<UserCircleIcon className="size-8" />
+					<CircleUser className="size-8" />
 					<div className="flex flex-col gap-0.5 leading-none">
 						<span className="font-semibold">ROAVIC IVAN</span>
 						<span className="text-xs text-gray-500">
 							ri.villanueva@example.com
 						</span>
 					</div>
-					<ChevronUpIcon
+					<ChevronUp
 						className={`ml-auto size-4 transition-transform ${
 							isUserDropDownOpen ? "rotate-180" : ""
 						}`}

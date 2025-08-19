@@ -36,6 +36,7 @@ export async function GetUserInfo(
 			console.error("Failed to fetch staff info")
 			return null
 		}
+
 		const data: StaffInfoPayload = await res.json()
 		return data
 	} catch (err) {
@@ -50,7 +51,10 @@ export async function RegisterUser(
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 		const res = await fetch(`${API_BASE}/dms/useraccount/registeruser`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: localStorage.getItem("authToken") || "",
+			},
 			body: JSON.stringify(register),
 			credentials: "include",
 		})

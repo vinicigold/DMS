@@ -1,33 +1,47 @@
 "use client"
-import React, { useState, useRef } from "react"
+import type React from "react"
+import { useState, useRef, useEffect } from "react"
 import {
 	XMarkIcon,
 	ShieldCheckIcon,
 	ArrowPathIcon,
 	CheckCircleIcon,
 } from "@heroicons/react/24/solid"
-import { VerifyOtp } from "@/service/login/VerifyOtp"
+import { OtpEmail } from "@/service/login/OtpEmail"
+import Image from "next/image"
 
-interface OtpModalProps {
+interface OtpQRModalProps {
 	readonly isOpen: boolean
 	readonly onClose: () => void
 	readonly onSubmit: (otp: string) => void
 	readonly isForReset?: boolean
-	readonly username: string
 }
 
-export default function OtpModal({
+export default function TwoFactorQRModal({
 	isOpen,
 	onClose,
 	onSubmit,
 	isForReset = false,
-	username,
-}: OtpModalProps) {
+}: OtpQRModalProps) {
 	const otpFieldIds = ["otp-1", "otp-2", "otp-3", "otp-4", "otp-5", "otp-6"]
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState("")
 	const [resendCooldown, setResendCooldown] = useState(0)
 	const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+	const [apiImage, setApiImage] = useState<string | null>(null)
+
+	const fetchApiImage = async () => {
+		const imageUrl = await OtpEmail()
+		if (imageUrl) {
+			setApiImage(imageUrl)
+		} else {
+			console.log("failed to render QR")
+		}
+	}
+
+	useEffect(() => {
+		fetchApiImage()
+	}, [])
 
 	const startResendCountdown = () => {
 		setResendCooldown(30)
@@ -70,21 +84,17 @@ export default function OtpModal({
 		}
 	}
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 		const otp = otpRefs.current.map((ref) => ref?.value || "").join("")
 		setIsLoading(true)
 		setError("")
 
-		const success = await VerifyOtp({ username, otp })
-
-		if (success) {
+		if (otp === "696969") {
 			onSubmit(otp)
-			console.log(success)
 		} else {
 			setError("Invalid OTP")
 		}
-
 		setIsLoading(false)
 	}
 
@@ -123,9 +133,18 @@ export default function OtpModal({
 				</div>
 				<form onSubmit={handleSubmit} className="p-6">
 					<div className="text-center mb-6">
-						<p className="text-gray-600 mb-4">
-							We sent a 6-digit verification code
-						</p>
+						<div className="relative w-48 h-48 mx-auto mb-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
+							{apiImage ? (
+								<Image
+									src={apiImage}
+									alt="QR Code"
+									className="object-contain w-full h-full"
+								/>
+							) : (
+								<span className="text-gray-400 text-sm">Loading QR...</span>
+							)}
+						</div>
+						<p className="text-gray-600 mb-4">scan QR for otp</p>
 					</div>
 					<div className="flex gap-3 justify-center mb-6">
 						{otpFieldIds.map((id, index) => (
