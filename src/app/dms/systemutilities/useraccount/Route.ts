@@ -24,10 +24,14 @@ export async function GetUserInfo(
 	staffId: string
 ): Promise<StaffInfoPayload | null> {
 	try {
+		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 		const res = await fetch(`${API_BASE}/dms/useraccount/getuserinfo`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `${token}`,
+			},
 			body: JSON.stringify({ staffId }),
 			credentials: "include",
 		})
@@ -48,12 +52,13 @@ export async function RegisterUser(
 	register: RegisterUserPayload
 ): Promise<boolean> {
 	try {
+		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 		const res = await fetch(`${API_BASE}/dms/useraccount/registeruser`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: localStorage.getItem("authToken") || "",
+				Authorization: `${token}`,
 			},
 			body: JSON.stringify(register),
 			credentials: "include",

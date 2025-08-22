@@ -13,7 +13,7 @@ export async function EmployeeStatus(): Promise<EmployeeStatus[]> {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: `${token}` || "",
+				Authorization: `${token}`,
 			},
 			credentials: "include",
 			cache: "no-cache",

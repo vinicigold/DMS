@@ -13,7 +13,7 @@ export async function UserStatus(): Promise<AccountStatus[]> {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: `${token}` || "",
+				Authorization: `${token}`,
 			},
 			credentials: "include",
 			cache: "no-cache",

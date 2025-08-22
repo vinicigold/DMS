@@ -1,11 +1,6 @@
 "use client"
 import React, { useState, useRef } from "react"
-import {
-	XMarkIcon,
-	ShieldCheckIcon,
-	ArrowPathIcon,
-	CheckCircleIcon,
-} from "@heroicons/react/24/solid"
+import { CircleCheck, RefreshCw, ShieldCheck, X } from "lucide-react"
 import { VerifyOtp } from "@/service/login/VerifyOtp"
 
 interface OtpModalProps {
@@ -14,6 +9,7 @@ interface OtpModalProps {
 	readonly onSubmit: (otp: string) => void
 	readonly isForReset?: boolean
 	readonly username: string
+	readonly email: string
 }
 
 export default function OtpModal({
@@ -22,6 +18,7 @@ export default function OtpModal({
 	onSubmit,
 	isForReset = false,
 	username,
+	email,
 }: OtpModalProps) {
 	const otpFieldIds = ["otp-1", "otp-2", "otp-3", "otp-4", "otp-5", "otp-6"]
 	const [isLoading, setIsLoading] = useState(false)
@@ -76,11 +73,11 @@ export default function OtpModal({
 		setIsLoading(true)
 		setError("")
 
-		const success = await VerifyOtp({ username, otp })
+		const data = await VerifyOtp({ username, otp })
 
-		if (success) {
-			onSubmit(otp)
-			console.log(success)
+		if (data) {
+			onSubmit(data.qrCode)
+			console.log("before qr:", data.qrCode)
 		} else {
 			setError("Invalid OTP")
 		}
@@ -104,10 +101,12 @@ export default function OtpModal({
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3f72AF] rounded-xl flex items-center justify-center">
-							<ShieldCheckIcon className="w-5 h-5 text-white" />
+							<ShieldCheck className="w-5 h-5 text-white" />
 						</div>
 						<div>
-							<h3 className="text-xl font-bold text-[#112D4E] ">Enter OTP</h3>
+							<h3 className="text-xl font-bold text-[#112D4E] ">
+								OTP VERIFICATION
+							</h3>
 							<p className="text-sm text-gray-500">
 								{isForReset
 									? "Enter the OTP sent to your email to reset your password."
@@ -118,14 +117,16 @@ export default function OtpModal({
 					<button
 						onClick={onClose}
 						className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-						<XMarkIcon className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors" />
+						<X className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors" />
 					</button>
 				</div>
 				<form onSubmit={handleSubmit} className="p-6">
 					<div className="text-center mb-6">
 						<p className="text-gray-600 mb-4">
-							We sent a 6-digit verification code
+							We sent enter 6-digit code to your email.
 						</p>
+
+						<p className="text-gray-600 mb-4">{email}</p>
 					</div>
 					<div className="flex gap-3 justify-center mb-6">
 						{otpFieldIds.map((id, index) => (
@@ -168,7 +169,7 @@ export default function OtpModal({
 							</>
 						) : (
 							<>
-								<CheckCircleIcon className="w-5 h-5" />
+								<CircleCheck className="w-5 h-5" />
 								Verify OTP
 							</>
 						)}
@@ -181,7 +182,7 @@ export default function OtpModal({
 								disabled={resendCooldown > 0 || isLoading}
 								className="text-[#3F72AF] hover:text[#112D4E] font-medium text-sm hover:underline transition-colors disabled:opacity-50 disabled:cursor-not-allowed
                             flex items-center justify-center gap-1 mx-auto">
-								<ArrowPathIcon className="w-4 h-4" />
+								<RefreshCw className="w-4 h-4" />
 								{resendCooldown > 0
 									? `Resend OTP (${resendCooldown}s)`
 									: "Resend OTP"}

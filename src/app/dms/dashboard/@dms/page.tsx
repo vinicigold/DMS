@@ -1,6 +1,6 @@
 export default function DocumentManagementSystem() {
 	return (
-		<div className="bg-[#fffff] text-[#112D4E] p-3 rounded-lg shadow-md hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out">
+		<div className="bg-[#fffff] text-[#112D4E] p-3 rounded-lg shadow-md">
 			<h3 className="text-lg font-bold text-center  ">
 				Document Management System
 			</h3>

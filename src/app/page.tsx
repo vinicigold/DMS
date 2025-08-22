@@ -1,11 +1,13 @@
 "use client"
 import { useState } from "react"
-import OtpModal from "@/components/OtpModal"
+import OtpModal from "@/components/Otpmodal"
 import TwoFactorQRModal from "@/components/TwoFactorQRModal"
-import NewPassModal from "@/components/NewPassModal"
+import NewPassModal from "@/components/Newpassmodal"
 import { useRouter } from "next/navigation"
 import { Building2, User, Lock, Eye, EyeOff, KeyRound } from "lucide-react"
 import { LoginUser } from "../service/login/LoginUser"
+import LoginOtpModal from "@/components/LoginOtpModal"
+import { maskEmail } from "@/utilities/mask"
 
 export default function Login() {
 	const [signIn, setSignIn] = useState({
@@ -16,12 +18,14 @@ export default function Login() {
 	const router = useRouter()
 	const [showPassword, setShowPassword] = useState(false)
 	const [showStaffIdModal, setShowStaffIdModal] = useState(false)
+	const [showLoginOtpModal, setShowLoginOtpModal] = useState(false)
 	const [showOtpModal, setShowOtpModal] = useState(false)
 	const [showQRModal, setShowQRModal] = useState(false)
-	const [forOtpReset, setForOtpReset] = useState(false)
 	const [showNewPassModal, setShowNewPassModal] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState("")
+	const [qrData, setQrData] = useState<string | null>(null)
+	const [email, setEmail] = useState<string>("")
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target
@@ -43,8 +47,18 @@ export default function Login() {
 			setIsLoading(false)
 			return
 		}
-		setForOtpReset(false)
-		setShowOtpModal(true)
+		if (successLogin.status === 200) {
+			setShowLoginOtpModal(true)
+			setIsLoading(false)
+			return
+		}
+
+		if (successLogin.status === 201) {
+			setEmail(successLogin.data.email)
+			setShowOtpModal(true)
+			setIsLoading(false)
+			return
+		}
 		setIsLoading(false)
 	}
 
@@ -153,38 +167,48 @@ export default function Login() {
 					</div>
 				</form>
 			</div>
+			{showLoginOtpModal && (
+				<LoginOtpModal
+					isOpen={showLoginOtpModal}
+					username={signIn.username}
+					onClose={() => {
+						setShowLoginOtpModal(false)
+					}}
+					onSubmit={(otp) => {
+						console.log("Submitted OTP:", otp)
+						setShowLoginOtpModal(false)
+						router.push("dms/dashboard")
+					}}
+				/>
+			)}
 			{showOtpModal && (
 				<OtpModal
 					isOpen={showOtpModal}
 					username={signIn.username}
+					email={maskEmail(email)}
 					onClose={() => {
 						setShowOtpModal(false)
-						setForOtpReset(false)
 					}}
-					onSubmit={(otp) => {
-						console.log("Submitted OTP:", otp)
+					onSubmit={(qrCode) => {
+						setQrData(qrCode)
 						setShowOtpModal(false)
-						if (forOtpReset) {
-							setForOtpReset(false)
-							setShowNewPassModal(true)
-						} else {
-							setShowQRModal(true)
-						}
+						setShowQRModal(true)
 					}}
 				/>
 			)}
 			{showQRModal && (
 				<TwoFactorQRModal
 					isOpen={showQRModal}
+					qrCode={qrData}
+					username={signIn.username}
 					onClose={() => {
 						setShowQRModal(false)
-						setForOtpReset(false)
 					}}
 					onSubmit={(otp) => {
 						console.log("Submitted OTP:", otp)
 						setShowOtpModal(false)
 						setShowQRModal(false)
-						router.push("dms/dashboard")
+						router.push("/")
 					}}
 				/>
 			)}
