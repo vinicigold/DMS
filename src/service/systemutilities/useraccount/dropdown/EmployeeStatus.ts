@@ -2,6 +2,7 @@ export interface EmployeeStatus {
 	EmployeeStatusID: number
 	Code: string
 	Name: string
+	Description: string
 	IsActive: boolean
 }
 
@@ -18,8 +19,11 @@ export async function EmployeeStatus(): Promise<EmployeeStatus[]> {
 			credentials: "include",
 			cache: "no-cache",
 		})
+
 		if (!res.ok) throw new Error("failed to fetch user account status")
-		return await res.json()
+
+		const data: EmployeeStatus[] = await res.json()
+		return data
 	} catch (error) {
 		console.error("error fetching user account status", error)
 		return []

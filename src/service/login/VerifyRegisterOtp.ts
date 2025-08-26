@@ -3,6 +3,10 @@ interface VerifyRegisterOtpPayload {
 	otp: string
 }
 
+interface VerifyRegisterOtpResponse {
+	message: string
+}
+
 export async function VerifyRegisterOtp(payload: VerifyRegisterOtpPayload) {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
@@ -21,7 +25,7 @@ export async function VerifyRegisterOtp(payload: VerifyRegisterOtpPayload) {
 			return false
 		}
 
-		const data = await res.json()
+		const data: VerifyRegisterOtpResponse = await res.json()
 
 		return data
 	} catch (error) {

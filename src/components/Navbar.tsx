@@ -3,7 +3,6 @@ import {
 	ChevronDown,
 	ChevronUp,
 	LayoutDashboard,
-	File,
 	Database,
 	ChartBarIncreasing,
 	Settings,
@@ -26,12 +25,6 @@ const navItems: NavItem[] = [
 		name: "Dashboard",
 		link: "/dms/dashboard",
 		icon: LayoutDashboard,
-	},
-	{
-		id: 2,
-		name: "Document Management",
-		link: "/dms/documentmanagement",
-		icon: File,
 	},
 	{
 		id: 3,
@@ -216,8 +209,8 @@ export default function Nav() {
 					/>
 				</button>
 				{isUserDropDownOpen && (
-					<div className="absolute bottom-full left-0 w-full bg-white border border-gray-200 rounded-md shadow-lg z-20 py-1">
-						<button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+					<div className="absolute bottom-full left-0 w-full bg-gradient-to-r bg-[#112D4E] to-[#3F72AF] border border-gray-200 rounded-md shadow-lg z-20 py-1">
+						<button className="block w-full text-left px-4 py-2 text-sm text-white hover:text-[#99c2f4]">
 							<span>Sign out</span>
 						</button>
 					</div>

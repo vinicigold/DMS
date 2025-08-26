@@ -2,6 +2,7 @@ export interface Role {
 	RoleID: number
 	Code: string
 	Name: string
+	Description: string
 	IsActive: boolean
 }
 
@@ -19,7 +20,8 @@ export async function UserRole(): Promise<Role[]> {
 			cache: "no-cache",
 		})
 		if (!res.ok) throw new Error("failed to fetch user account status")
-		return await res.json()
+		const data: Role[] = await res.json()
+		return data
 	} catch (error) {
 		console.error("error fetching user account status", error)
 		return []

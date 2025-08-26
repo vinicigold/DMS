@@ -3,7 +3,13 @@ interface VerifyOtpPayload {
 	otp: string
 }
 
-export async function VerifyOtp(payload: VerifyOtpPayload) {
+interface VerifyOtpResponse {
+	qrCode: string
+}
+
+export async function VerifyOtp(
+	payload: VerifyOtpPayload
+): Promise<VerifyOtpResponse | false> {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -15,13 +21,11 @@ export async function VerifyOtp(payload: VerifyOtpPayload) {
 			body: JSON.stringify(payload),
 		})
 
-		console.log(payload)
-
 		if (!res.ok) {
 			return false
 		}
 
-		const data = await res.json()
+		const data: VerifyOtpResponse = await res.json()
 
 		return data
 	} catch (error) {

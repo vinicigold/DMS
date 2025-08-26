@@ -51,7 +51,8 @@ export async function UserAccountsTable(
 			return null
 		}
 
-		return (await res.json()) as UserAccountApiResponse
+		const data: UserAccountApiResponse = await res.json()
+		return data
 	} catch (err) {
 		console.error("Error fetching user accounts", err)
 		return null

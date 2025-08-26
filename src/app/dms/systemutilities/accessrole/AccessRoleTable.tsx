@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useState } from "react"
-import { PlusCircleIcon } from "@heroicons/react/24/solid"
+import { SquarePen, ToggleLeft, ToggleRight, CirclePlus } from "lucide-react"
 import { FetchAccessRoleTable } from "@/service/systemutilities/accessrole/table/FetchAccessRoleTable"
+import AddRoleModal from "@/components/modal/AddRoleModal"
 
 interface Role {
 	roleid: number
@@ -12,6 +13,7 @@ interface Role {
 
 export default function AccessRoleTable() {
 	const [roles, setRoles] = useState<Role[]>([])
+	const [addRoleModalOpen, setAddRoleModalOpen] = useState(false)
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -29,12 +31,26 @@ export default function AccessRoleTable() {
 		fetchData()
 	}, [])
 
+	const handleEdit = (role: number) => {
+		console.log("Edit user:", role)
+	}
+
+	const handleToggleEnabled = (roleid: number) => {
+		setRoles((prev) =>
+			prev.map((role) =>
+				role.roleid === roleid ? { ...role, status: !role.status } : role
+			)
+		)
+	}
+
 	return (
 		<div className="bg-white text-[#112D4E] p-4 rounded-lg shadow-md">
 			<div className="flex justify-between items-center mb-4">
 				<h3 className="text-lg font-bold">User Accounts</h3>
-				<button className="bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-4 py-2 rounded-lg hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 flex items-center gap-2">
-					<PlusCircleIcon className="w-4 h-4" />
+				<button
+					onClick={() => setAddRoleModalOpen(true)}
+					className="bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-4 py-2 rounded-lg hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 flex items-center gap-2">
+					<CirclePlus className="w-4 h-4" />
 					Add Role
 				</button>
 			</div>
@@ -69,11 +85,35 @@ export default function AccessRoleTable() {
 										{role.status ? "Active" : "Disabled"}
 									</span>
 								</td>
+								<td className="px-3 py-2">
+									<div className="flex justify-center gap-2">
+										<button
+											onClick={() => handleEdit(role.roleid)}
+											title="Edit User"
+											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
+											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
+										</button>
+										<button
+											onClick={() => handleToggleEnabled(role.roleid)}
+											title={role.status ? "Disable Role" : "Activate Role"}
+											className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none">
+											{role.status ? (
+												<ToggleRight className="h-6 w-6 text-green-400 hover:text-green-600" />
+											) : (
+												<ToggleLeft className="h-6 w-6 text-red-400 hover:text-red-600" />
+											)}
+										</button>
+									</div>
+								</td>
 							</tr>
 						))}
 					</tbody>
 				</table>
 			</div>
+			<AddRoleModal
+				isOpen={addRoleModalOpen}
+				onClose={() => setAddRoleModalOpen(false)}
+			/>
 		</div>
 	)
 }

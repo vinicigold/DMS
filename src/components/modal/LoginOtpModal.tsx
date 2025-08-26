@@ -1,35 +1,32 @@
 "use client"
 import React, { useState, useRef } from "react"
 import { CircleCheck, RefreshCw, ShieldCheck, X } from "lucide-react"
-import { VerifyOtp } from "@/service/login/VerifyOtp"
+import { LoginTwoFA } from "@/service/login/LoginTwoFA"
+import { ResetTwoFA } from "@/service/login/ResetTwoFA"
 
-interface OtpModalProps {
+interface LoginOtpModalProps {
 	readonly isOpen: boolean
 	readonly onClose: () => void
 	readonly onSubmit: (otp: string) => void
-	readonly isForReset?: boolean
 	readonly username: string
-	readonly email: string
 }
 
-export default function OtpModal({
+export default function LoginOtpModal({
 	isOpen,
 	onClose,
 	onSubmit,
-	isForReset = false,
 	username,
-	email,
-}: OtpModalProps) {
+}: LoginOtpModalProps) {
 	const otpFieldIds = ["otp-1", "otp-2", "otp-3", "otp-4", "otp-5", "otp-6"]
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState("")
-	const [resendCooldown, setResendCooldown] = useState(0)
+	const [resetCooldown, setResetCooldown] = useState(0)
 	const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
-	const startResendCountdown = () => {
-		setResendCooldown(30)
+	const startresetCountdown = () => {
+		setResetCooldown(30)
 		const interval = setInterval(() => {
-			setResendCooldown((prev) => {
+			setResetCooldown((prev) => {
 				if (prev <= 1) {
 					clearInterval(interval)
 					return 0
@@ -73,11 +70,11 @@ export default function OtpModal({
 		setIsLoading(true)
 		setError("")
 
-		const data = await VerifyOtp({ username, otp })
+		const data = await LoginTwoFA({ username, otp })
 
 		if (data) {
-			onSubmit(data.qrCode)
-			console.log("before qr:", data.qrCode)
+			onSubmit(otp)
+			console.log(data)
 		} else {
 			setError("Invalid OTP")
 		}
@@ -85,11 +82,16 @@ export default function OtpModal({
 		setIsLoading(false)
 	}
 
-	const handleResendOtp = () => {
-		if (resendCooldown > 0) return
-		setResendCooldown(30)
+	const handleResetOtp = async () => {
 		setIsLoading(true)
-		startResendCountdown()
+		const res = await ResetTwoFA({ username })
+		if (res?.message) {
+			alert(res.message)
+			onClose()
+		} else {
+			setError("Failed to reset 2FA. Try again.")
+		}
+		startresetCountdown()
 		setIsLoading(false)
 	}
 
@@ -104,14 +106,10 @@ export default function OtpModal({
 							<ShieldCheck className="w-5 h-5 text-white" />
 						</div>
 						<div>
-							<h3 className="text-xl font-bold text-[#112D4E] ">
-								OTP VERIFICATION
+							<h3 className="text-med font-bold text-[#112D4E] ">
+								TWO FACTOR AUTHENTICATION
 							</h3>
-							<p className="text-sm text-gray-500">
-								{isForReset
-									? "Enter the OTP sent to your email to reset your password."
-									: "Enter the OTP sent to your email."}
-							</p>
+							<p className="text-sm text-gray-500">Please enter 6-digit code</p>
 						</div>
 					</div>
 					<button
@@ -123,10 +121,8 @@ export default function OtpModal({
 				<form onSubmit={handleSubmit} className="p-6">
 					<div className="text-center mb-6">
 						<p className="text-gray-600 mb-4">
-							We sent enter 6-digit code to your email.
+							Enter two factor Authenticator code
 						</p>
-
-						<p className="text-gray-600 mb-4">{email}</p>
 					</div>
 					<div className="flex gap-3 justify-center mb-6">
 						{otpFieldIds.map((id, index) => (
@@ -178,14 +174,14 @@ export default function OtpModal({
 						<p>
 							<button
 								type="button"
-								onClick={handleResendOtp}
-								disabled={resendCooldown > 0 || isLoading}
+								onClick={handleResetOtp}
+								disabled={resetCooldown > 0 || isLoading}
 								className="text-[#3F72AF] hover:text[#112D4E] font-medium text-sm hover:underline transition-colors disabled:opacity-50 disabled:cursor-not-allowed
                             flex items-center justify-center gap-1 mx-auto">
 								<RefreshCw className="w-4 h-4" />
-								{resendCooldown > 0
-									? `Resend OTP (${resendCooldown}s)`
-									: "Resend OTP"}
+								{resetCooldown > 0
+									? `Reset 2FA (${resetCooldown}s)`
+									: "Reset 2FA"}
 							</button>
 						</p>
 					</div>

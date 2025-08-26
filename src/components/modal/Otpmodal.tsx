@@ -1,29 +1,59 @@
 "use client"
-import type React from "react"
-import { useState, useRef } from "react"
-import { CircleCheck, X, QrCode } from "lucide-react"
-import Image from "next/image"
-import { VerifyRegisterOtp } from "@/service/login/VerifyRegisterOtp"
+import React, { useState, useRef, useEffect } from "react"
+import { CircleCheck, RefreshCw, ShieldCheck } from "lucide-react"
+import { VerifyOtp } from "@/service/login/VerifyOtp"
+import { ResendTwoFA } from "@/service/login/ResendOtp"
 
-interface OtpQRModalProps {
+interface OtpModalProps {
 	readonly isOpen: boolean
-	readonly onClose: () => void
 	readonly onSubmit: (otp: string) => void
-	readonly qrCode: string | null
+	readonly isForReset?: boolean
 	readonly username: string
+	readonly email: string
 }
 
-export default function TwoFactorQRModal({
+export default function OtpModal({
 	isOpen,
-	onClose,
 	onSubmit,
-	qrCode,
+	isForReset = false,
 	username,
-}: OtpQRModalProps) {
+	email,
+}: OtpModalProps) {
 	const otpFieldIds = ["otp-1", "otp-2", "otp-3", "otp-4", "otp-5", "otp-6"]
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState("")
+	const [resendCooldown, setResendCooldown] = useState(0)
 	const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+	const intervalRef = useRef<NodeJS.Timeout | null>(null)
+
+	const startResendCountdown = () => {
+		// clear any existing interval first
+		if (intervalRef.current) {
+			clearInterval(intervalRef.current)
+		}
+
+		setResendCooldown(10)
+		intervalRef.current = setInterval(() => {
+			setResendCooldown((prev) => {
+				if (prev <= 1) {
+					if (intervalRef.current) clearInterval(intervalRef.current)
+					return 0
+				}
+				return prev - 1 // always decrement by 1
+			})
+		}, 1000)
+	}
+
+	useEffect(() => {
+		if (isOpen) {
+			startResendCountdown()
+		} else {
+			setResendCooldown(0) // reset when modal closes
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current)
+			}
+		}
+	}, [isOpen])
 
 	const allowNum = (e: React.FormEvent<HTMLInputElement>) => {
 		e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "")
@@ -59,13 +89,29 @@ export default function TwoFactorQRModal({
 		setIsLoading(true)
 		setError("")
 
-		const data = await VerifyRegisterOtp({ username, otp })
+		const data = await VerifyOtp({ username, otp })
+
 		if (data) {
-			onSubmit(data)
-			console.log("Register QR", data)
+			onSubmit(data.qrCode)
+			console.log("before qr:", data.qrCode)
 		} else {
 			setError("Invalid OTP")
 		}
+
+		setIsLoading(false)
+	}
+
+	const handleResendOtp = async () => {
+		if (resendCooldown > 0) return
+		setIsLoading(true)
+
+		const res = await ResendTwoFA({ username })
+		if (res?.message) {
+			alert(res.message)
+		} else {
+			setError("Failed to resend 2FA. Try again.")
+		}
+		startResendCountdown()
 		setIsLoading(false)
 	}
 
@@ -77,36 +123,27 @@ export default function TwoFactorQRModal({
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3f72AF] rounded-xl flex items-center justify-center">
-							<QrCode className="w-5 h-5 text-white" />
+							<ShieldCheck className="w-5 h-5 text-white" />
 						</div>
 						<div>
 							<h3 className="text-xl font-bold text-[#112D4E] ">
-								TWO FACTOR REGISTRATION
+								OTP VERIFICATION
 							</h3>
-							<p className="text-sm text-gray-500">Open Authenticator App</p>
+							<p className="text-sm text-gray-500">
+								{isForReset
+									? "Enter the OTP sent to your email to reset your password."
+									: "Enter the OTP sent to your email."}
+							</p>
 						</div>
 					</div>
-					<button
-						onClick={onClose}
-						className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-						<X className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors" />
-					</button>
 				</div>
 				<form onSubmit={handleSubmit} className="p-6">
 					<div className="text-center mb-6">
-						<div className="relative w-48 h-48 mx-auto mb-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
-							{qrCode ? (
-								<Image
-									src={qrCode}
-									alt="QR Code"
-									fill
-									className="object-contain w-full h-full"
-								/>
-							) : (
-								<span className="text-gray-400 text-sm">Loading QR...</span>
-							)}
-						</div>
-						<p className="text-gray-600 mb-4">Scan QR and enter the code</p>
+						<p className="text-gray-600 mb-4">
+							We sent enter 6-digit code to your email.
+						</p>
+
+						<p className="text-gray-600 mb-4">{email}</p>
 					</div>
 					<div className="flex gap-3 justify-center mb-6">
 						{otpFieldIds.map((id, index) => (
@@ -154,6 +191,21 @@ export default function TwoFactorQRModal({
 							</>
 						)}
 					</button>
+					<div className="text-center">
+						<p>
+							<button
+								type="button"
+								onClick={handleResendOtp}
+								disabled={resendCooldown > 0 || isLoading}
+								className="text-[#3F72AF] hover:text[#112D4E] font-medium text-sm hover:underline transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                            flex items-center justify-center gap-1 mx-auto">
+								<RefreshCw className="w-4 h-4" />
+								{resendCooldown > 0
+									? `Resend OTP (${resendCooldown}s)`
+									: "Resend OTP"}
+							</button>
+						</p>
+					</div>
 				</form>
 			</div>
 		</div>

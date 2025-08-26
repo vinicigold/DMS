@@ -1,12 +1,10 @@
-"use client"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { GetUserInfo, RegisterUser } from "./Route"
 import {
-	XMarkIcon,
-	UserPlusIcon,
-	MagnifyingGlassIcon,
-} from "@heroicons/react/24/solid"
+	GetUserInfo,
+	RegisterUser,
+} from "../../app/dms/systemutilities/useraccount/Route"
+import { X, UserRoundPlus, UserRoundSearch } from "lucide-react"
 import { EmployeeStatus } from "@/service/systemutilities/useraccount/dropdown/EmployeeStatus"
 import { UserRole } from "@/service/systemutilities/useraccount/dropdown/UserRole"
 import { UserStatus } from "@/service/systemutilities/useraccount/dropdown/UserStatus"
@@ -177,7 +175,7 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
-							<UserPlusIcon className="w-5 h-5 text-white" />
+							<UserRoundPlus className="w-5 h-5 text-white" />
 						</div>
 						<div>
 							<h3 className="text-xl font-bold text-[#112D4E]">Add New User</h3>
@@ -187,7 +185,7 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 					<button
 						onClick={handleClose}
 						className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-						<XMarkIcon className="w-4 h-4 text-gray-600" />
+						<X className="w-4 h-4 text-gray-600" />
 					</button>
 				</div>
 				<form onSubmit={handleSubmit} className="p-6">
@@ -219,7 +217,7 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 										{isSearching ? (
 											<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
 										) : (
-											<MagnifyingGlassIcon className="w-4 h-4" />
+											<UserRoundSearch className="w-4 h-4" />
 										)}
 									</button>
 								</div>
@@ -389,7 +387,7 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 								</>
 							) : (
 								<>
-									<UserPlusIcon className="w-5 h-5" />
+									<UserRoundPlus className="w-5 h-5" />
 									Create User
 								</>
 							)}

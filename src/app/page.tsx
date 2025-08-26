@@ -1,12 +1,12 @@
 "use client"
 import { useState } from "react"
-import OtpModal from "@/components/Otpmodal"
-import TwoFactorQRModal from "@/components/TwoFactorQRModal"
-import NewPassModal from "@/components/Newpassmodal"
+import OtpModal from "@/components/modal/Otpmodal"
+import TwoFactorQRModal from "@/components/modal/TwoFactorQRModal"
+import NewPassModal from "@/components/modal/Newpassmodal"
 import { useRouter } from "next/navigation"
 import { Building2, User, Lock, Eye, EyeOff, KeyRound } from "lucide-react"
 import { LoginUser } from "../service/login/LoginUser"
-import LoginOtpModal from "@/components/LoginOtpModal"
+import LoginOtpModal from "@/components/modal/LoginOtpModal"
 import { maskEmail } from "@/utilities/mask"
 
 export default function Login() {
@@ -186,9 +186,6 @@ export default function Login() {
 					isOpen={showOtpModal}
 					username={signIn.username}
 					email={maskEmail(email)}
-					onClose={() => {
-						setShowOtpModal(false)
-					}}
 					onSubmit={(qrCode) => {
 						setQrData(qrCode)
 						setShowOtpModal(false)
@@ -201,14 +198,10 @@ export default function Login() {
 					isOpen={showQRModal}
 					qrCode={qrData}
 					username={signIn.username}
-					onClose={() => {
-						setShowQRModal(false)
-					}}
 					onSubmit={(otp) => {
 						console.log("Submitted OTP:", otp)
 						setShowOtpModal(false)
 						setShowQRModal(false)
-						router.push("/")
 					}}
 				/>
 			)}

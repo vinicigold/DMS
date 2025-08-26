@@ -3,7 +3,13 @@ interface LoginOtpPayload {
 	otp: string
 }
 
-export async function LoginTwoFA(payload: LoginOtpPayload) {
+interface LoginOtpResponse {
+	message: string
+}
+
+export async function LoginTwoFA(
+	payload: LoginOtpPayload
+): Promise<LoginOtpResponse | false> {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -22,7 +28,7 @@ export async function LoginTwoFA(payload: LoginOtpPayload) {
 			return false
 		}
 
-		const data = await res.json()
+		const data: LoginOtpResponse = await res.json()
 		localStorage.setItem("authToken", data.message)
 
 		return data

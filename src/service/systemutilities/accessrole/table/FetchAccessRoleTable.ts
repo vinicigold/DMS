@@ -1,4 +1,5 @@
 interface ApiRole {
+	code: string
 	roleid: number
 	accessname: string
 	description: string
@@ -44,7 +45,8 @@ export async function FetchAccessRoleTable(
 			return null
 		}
 
-		return (await res.json()) as AccessRoleApiResponse
+		const data: AccessRoleApiResponse = await res.json()
+		return data
 	} catch (err) {
 		console.error("Error fetching user role", err)
 		return null

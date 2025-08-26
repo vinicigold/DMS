@@ -1,7 +1,13 @@
 "use client"
 import React, { useEffect, useState } from "react"
-import { PencilIcon, TrashIcon, UserPlusIcon } from "@heroicons/react/24/solid"
-import AddUserModal from "./AddUserModal"
+import {
+	SquarePen,
+	ToggleLeft,
+	ToggleRight,
+	UserRoundPlus,
+	History,
+} from "lucide-react"
+import AddUserModal from "../../../../components/modal/AddUserModal"
 import { UserAccountsTable } from "@/service/systemutilities/useraccount/table/UserAccountTable"
 
 interface User {
@@ -16,7 +22,6 @@ interface User {
 	status: "Active" | "Disable"
 	passwordExpirationDate?: string
 	dateLocked: string
-	functions: string
 }
 
 export default function UserTable() {
@@ -39,7 +44,6 @@ export default function UserTable() {
 					status: u.status === "Active" ? "Active" : "Disable",
 					passwordExpirationDate: u.passwordExpirationDate,
 					dateLocked: "-",
-					functions: u.rolename,
 				})) ?? []
 
 			setUsers(mappedUsers)
@@ -51,8 +55,8 @@ export default function UserTable() {
 		console.log("Edit user:", userId)
 	}
 
-	const handleDelete = (userId: number) => {
-		console.log("Delete user:", userId)
+	const handleReset = (userId: number) => {
+		console.log("Reset user:", userId)
 	}
 
 	const handleToggleEnabled = (userId: number) => {
@@ -89,7 +93,7 @@ export default function UserTable() {
 				<button
 					onClick={() => setShowAddModal(true)}
 					className="bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-4 py-2 rounded-lg hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 flex items-center gap-2">
-					<UserPlusIcon className="w-4 h-4" />
+					<UserRoundPlus className="w-4 h-4" />
 					Add User
 				</button>
 			</div>
@@ -146,14 +150,14 @@ export default function UserTable() {
 										<button
 											onClick={() => handleEdit(user.id)}
 											title="Edit User"
-											className="text-[#3F72AF] hover:text-[#112D4E] hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
-											<PencilIcon className="w-4 h-4" />
+											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
+											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
 										<button
-											onClick={() => handleDelete(user.id)}
-											title="Delete User"
-											className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition-all duration-200">
-											<TrashIcon className="w-4 h-4" />
+											onClick={() => handleReset(user.id)}
+											title="Reset User"
+											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
+											<History className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
 										<button
 											onClick={() => handleToggleEnabled(user.id)}
@@ -162,16 +166,12 @@ export default function UserTable() {
 													? "Disable User"
 													: "Activate User"
 											}
-											className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none
-											${
-												user.status === "Active"
-													? "bg-[#3F72AF] hover:bg-[#112D4E]"
-													: "bg-gray-300 hover:bg-gray-400"
-											}`}>
-											<span
-												className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200
-												${user.status === "Active" ? "translate-x-6" : "translate-x-1"}`}
-											/>
+											className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none">
+											{user.status === "Active" ? (
+												<ToggleRight className="h-6 w-6 text-green-400 hover:text-green-600" />
+											) : (
+												<ToggleLeft className="h-6 w-6 text-red-400 hover:text-red-600" />
+											)}
 										</button>
 									</div>
 								</td>

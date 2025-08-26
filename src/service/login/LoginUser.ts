@@ -3,7 +3,15 @@ interface LoginUserPayload {
 	UserPassword: string
 }
 
-export async function LoginUser(login: LoginUserPayload) {
+interface LoginUserResponse {
+	email: string
+	message: string
+	otp: string
+}
+
+export async function LoginUser(
+	login: LoginUserPayload
+): Promise<{ status: number; data: LoginUserResponse } | null> {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 		const res = await fetch(`${API_BASE}/dms/login`, {
@@ -11,8 +19,11 @@ export async function LoginUser(login: LoginUserPayload) {
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(login),
 		})
+		if (!res.ok) {
+			throw new Error("Invalid Username or Password")
+		}
 
-		const data = await res.json()
+		const data: LoginUserResponse = await res.json()
 
 		console.log("data in login", data)
 
