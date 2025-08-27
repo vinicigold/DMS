@@ -59,7 +59,7 @@ export default function TwoFactorQRModal({
 
 		const data = await VerifyRegisterOtp({ username, otp })
 		if (data) {
-			onSubmit(data)
+			onSubmit(data.message)
 			console.log("Register QR", data)
 		} else {
 			setError("Invalid OTP")

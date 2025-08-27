@@ -1,3 +1,4 @@
+"use client"
 import type React from "react"
 import { useEffect, useState } from "react"
 import {
@@ -47,6 +48,7 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 
 	const [isLoading, setIsLoading] = useState(false)
 	const [isSearching, setIsSearching] = useState(false)
+	const [error, setError] = useState("")
 
 	const [roleOptions, setRoleOptions] = useState<
 		{ id: number; name: string }[]
@@ -124,7 +126,7 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 				birthdate: staffInfo.DateOfBirth || "",
 			}))
 		} else {
-			console.warn("No staff info found for this ID")
+			setError("No staff info found for this ID")
 		}
 		setIsSearching(false)
 
@@ -164,14 +166,16 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 
 		if (success) {
 			setFormData(initialFormData)
+		} else {
+			setError("Failed to create user")
 		}
 	}
 
 	if (!isOpen) return null
 
 	return (
-		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto">
+		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto scrollbar-hide">
+			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 scale-100">
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
@@ -374,7 +378,13 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 							</div>
 						</div>
 					</div>
-
+					{error && (
+						<div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 mt-6">
+							<p className="font-medium text-sm text-center text-red-600">
+								{error}
+							</p>
+						</div>
+					)}
 					<div className="flex gap-4 mt-6">
 						<button
 							type="submit"

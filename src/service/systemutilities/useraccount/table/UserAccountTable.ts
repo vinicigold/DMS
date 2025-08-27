@@ -13,41 +13,38 @@ interface ApiUser {
 }
 
 interface UserAccountApiResponse {
-	users: ApiUser[]
+	page: number
 	limit: number
-	offset: number
 	total: number
-}
-
-interface UserAccountQuery {
-	limit?: number
-	offset?: number
+	totalpages: number
+	data: ApiUser[]
 }
 
 export async function UserAccountsTable(
-	params: UserAccountQuery = { limit: 10, offset: 0 }
+	params: { page?: number; limit?: number } = {}
 ): Promise<UserAccountApiResponse | null> {
 	try {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const query = new URLSearchParams({
-			limit: String(params.limit ?? 10),
-			offset: String(params.offset ?? 0),
-		})
+
+		const query = new URLSearchParams()
+		if (params.page) query.set("page", String(params.page))
+		if (params.limit) query.set("limit", String(params.limit))
+
 		const res = await fetch(
-			`${API_BASE}/dms/useraccount/useraccountlist?${query.toString()}`,
+			`${API_BASE}/dms/usersaccount/user-list?${query.toString()}`,
 			{
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: `${token}`,
+					Authorization: `${token}` || "",
 				},
 				credentials: "include",
 			}
 		)
 
 		if (!res.ok) {
-			console.error("failed to fetch user accounts")
+			console.error("Failed to fetch user accounts")
 			return null
 		}
 

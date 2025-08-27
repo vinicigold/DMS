@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react"
 import { SquarePen, ToggleLeft, ToggleRight, CirclePlus } from "lucide-react"
 import { FetchAccessRoleTable } from "@/service/systemutilities/accessrole/table/FetchAccessRoleTable"
 import AddRoleModal from "@/components/modal/AddRoleModal"
+// import EditRoleModal from "@/components/modal/EditRoleModal"
 
 interface Role {
 	roleid: number
@@ -14,26 +15,31 @@ interface Role {
 export default function AccessRoleTable() {
 	const [roles, setRoles] = useState<Role[]>([])
 	const [addRoleModalOpen, setAddRoleModalOpen] = useState(false)
+	// const [editRoleModalOpen, setEditRoleModalOpen] = useState(false)
+	// const [selectedRole, setSelectedRole] = useState<Role | null>(null)
+	const [page, setPage] = useState(1)
+	const [totalPages, setTotalPages] = useState(1)
+	const [limit, setLimit] = useState<number>(0)
+	const [total, setTotal] = useState<number>(0)
 
 	useEffect(() => {
-		const fetchData = async () => {
-			const res = await FetchAccessRoleTable({ limit: 10, offset: 0 })
-			const mappedRoles: Role[] =
-				res?.roles?.map((r) => ({
-					roleid: r.roleid,
-					accessname: r.accessname,
-					description: r.description,
-					status: r.status,
-				})) ?? []
-
-			setRoles(mappedRoles)
+		async function loadRoles() {
+			const data = await FetchAccessRoleTable({ page })
+			if (data) {
+				setRoles(data.data)
+				setPage(data.page)
+				setLimit(data.limit)
+				setTotalPages(data.totalpages)
+				setTotal(data.total)
+			}
 		}
-		fetchData()
-	}, [])
+		loadRoles()
+	}, [page])
 
-	const handleEdit = (role: number) => {
-		console.log("Edit user:", role)
-	}
+	// const handleEdit = (role: Role) => {
+	// 	setSelectedRole(role)
+	// 	setEditRoleModalOpen(true)
+	// }
 
 	const handleToggleEnabled = (roleid: number) => {
 		setRoles((prev) =>
@@ -46,7 +52,7 @@ export default function AccessRoleTable() {
 	return (
 		<div className="bg-white text-[#112D4E] p-4 rounded-lg shadow-md">
 			<div className="flex justify-between items-center mb-4">
-				<h3 className="text-lg font-bold">User Accounts</h3>
+				<h3 className="text-lg font-bold">Access Role</h3>
 				<button
 					onClick={() => setAddRoleModalOpen(true)}
 					className="bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-4 py-2 rounded-lg hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 flex items-center gap-2">
@@ -54,7 +60,7 @@ export default function AccessRoleTable() {
 					Add Role
 				</button>
 			</div>
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto h-[450px]">
 				<table className="w-full text-sm">
 					<thead>
 						<tr className="bg-[#CCE3FF] text-[#112D4E]">
@@ -88,8 +94,8 @@ export default function AccessRoleTable() {
 								<td className="px-3 py-2">
 									<div className="flex justify-center gap-2">
 										<button
-											onClick={() => handleEdit(role.roleid)}
-											title="Edit User"
+											// onClick={() => handleEdit(role)}
+											title="Edit Role"
 											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
@@ -110,10 +116,51 @@ export default function AccessRoleTable() {
 					</tbody>
 				</table>
 			</div>
+			<div className="flex text-sm justify-end items-center mt-1 space-x-2">
+				{/* Previous arrow */}
+				<button
+					onClick={() => setPage(Math.max(page - 1, 1))}
+					className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
+					&lt;
+				</button>
+
+				{/* Page numbers */}
+				{Array.from({ length: totalPages }, (_, i) => i + 1)
+					.filter((p) => {
+						// Show first, last, current, and neighbors
+						return (
+							p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)
+						)
+					})
+					.map((p, idx, arr) => (
+						<React.Fragment key={p}>
+							{idx > 0 && p - arr[idx - 1] > 1 && (
+								<span className="px-1">...</span>
+							)}
+							<button onClick={() => setPage(p)}>{p}</button>
+						</React.Fragment>
+					))}
+
+				{/* Next arrow */}
+				<button
+					onClick={() => setPage(Math.min(page + 1, totalPages))}
+					className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
+					&gt;
+				</button>
+			</div>
+			<div className="text-sm text-gray-500 mb-2">
+				Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
+				{total} entries
+			</div>
 			<AddRoleModal
 				isOpen={addRoleModalOpen}
 				onClose={() => setAddRoleModalOpen(false)}
 			/>
+			{/* <EditRoleModal
+				isOpen={editRoleModalOpen}
+				onClose={() => setEditRoleModalOpen(false)}
+				roleData={selectedRole}
+			/> */}
 		</div>
 	)
 }

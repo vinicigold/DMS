@@ -10,7 +10,7 @@ export async function UserRole(): Promise<Role[]> {
 	try {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const res = await fetch(`${API_BASE}/dms/useraccount/roles`, {
+		const res = await fetch(`${API_BASE}/dms/usersaccount/roles`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",

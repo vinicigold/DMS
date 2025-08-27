@@ -1,5 +1,4 @@
 interface ApiRole {
-	code: string
 	roleid: number
 	accessname: string
 	description: string
@@ -7,27 +6,22 @@ interface ApiRole {
 }
 
 interface AccessRoleApiResponse {
-	roles: ApiRole[]
+	page: number
 	limit: number
-	offset: number
 	total: number
-}
-
-interface UserRoleQuery {
-	limit?: number
-	offset?: number
+	totalpages: number
+	data: ApiRole[]
 }
 
 export async function FetchAccessRoleTable(
-	params: UserRoleQuery = { limit: 10, offset: 0 }
+	params: { page?: number; limit?: number } = {}
 ): Promise<AccessRoleApiResponse | null> {
 	try {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const query = new URLSearchParams({
-			limit: String(params.limit ?? 10),
-			offset: String(params.offset ?? 0),
-		})
+		const query = new URLSearchParams()
+		if (params.page) query.set("page", String(params.page))
+		if (params.limit) query.set("limit", String(params.limit))
 		const res = await fetch(
 			`${API_BASE}/dms/access-role/get-role?${query.toString()}`,
 			{

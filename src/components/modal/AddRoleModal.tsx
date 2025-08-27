@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from "react"
-import { X, Settings } from "lucide-react"
+import { AddRole } from "@/service/systemutilities/accessrole/AddRole"
+import { X, UserRoundCog, CirclePlus } from "lucide-react"
 
 interface AddRoleModalProps {
 	readonly isOpen: boolean
@@ -15,6 +16,8 @@ interface RoleData {
 }
 
 export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
+	const [isLoading, setIsLoading] = useState(false)
+	const [error, setError] = useState("")
 	const [formData, setFormData] = useState<RoleData>({
 		code: "",
 		name: "",
@@ -39,20 +42,37 @@ export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
 			[name]: name === "isactive" ? value === "true" : value,
 		}))
 	}
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
+		setIsLoading(true)
+		setError("")
+
+		const data = await AddRole(formData)
+
+		if (data) {
+			onClose()
+			setFormData({ code: "", name: "", description: "", isactive: true })
+		} else {
+			setError("Failed to add role")
+		}
+
+		setIsLoading(false)
+	}
 	const handleClose = () => {
 		setFormData(initialFormData)
 		onClose()
+		setError("")
 	}
 
 	if (!isOpen) return null
 
 	return (
-		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto">
+		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-hidden overscroll-contain">
+			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto hide-scrollbar">
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
-							<Settings className="w-5 h-5 text-white" />
+							<UserRoundCog className="w-5 h-5 text-white" />
 						</div>
 						<div>
 							<h3 className="text-xl font-bold text-[#112D4E]">Add New Role</h3>
@@ -65,7 +85,7 @@ export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
 						<X className="w-4 h-4 text-gray-600" />
 					</button>
 				</div>
-				<form className="p-6">
+				<form onSubmit={handleSubmit} className="p-6">
 					<div className="space-y-4">
 						<div>
 							<label
@@ -137,11 +157,29 @@ export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
 								<option value="false">Inactive</option>
 							</select>
 						</div>
+						{error && (
+							<div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+								<p className="font-medium text-sm text-center text-red-600">
+									{error}
+								</p>
+							</div>
+						)}
 						<div className="flex gap-4 mt-6">
 							<button
 								type="submit"
+								disabled={isLoading}
 								className="flex-1 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-6 py-3 rounded-xl hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-								Create Role
+								{isLoading ? (
+									<>
+										<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+										Creating Role...
+									</>
+								) : (
+									<>
+										<CirclePlus className="w-5 h-5" />
+										Create Role
+									</>
+								)}
 							</button>
 						</div>
 					</div>

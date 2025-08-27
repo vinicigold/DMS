@@ -26,7 +26,7 @@ export async function GetUserInfo(
 	try {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const res = await fetch(`${API_BASE}/dms/useraccount/getuserinfo`, {
+		const res = await fetch(`${API_BASE}/dms/usersaccount/user-info`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -54,7 +54,7 @@ export async function RegisterUser(
 	try {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const res = await fetch(`${API_BASE}/dms/useraccount/registeruser`, {
+		const res = await fetch(`${API_BASE}/dms/usersaccount/add-user`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

@@ -27,29 +27,41 @@ interface User {
 export default function UserTable() {
 	const [users, setUsers] = useState<User[]>([])
 	const [showAddModal, setShowAddModal] = useState(false)
+	const [page, setPage] = useState(1)
+	const [totalPages, setTotalPages] = useState(1)
+	const [limit, setLimit] = useState<number>(0)
+	const [total, setTotal] = useState<number>(0)
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const res = await UserAccountsTable({ limit: 10, offset: 0 })
-			const mappedUsers: User[] =
-				res?.users?.map((u, index) => ({
-					id: index + 1,
-					username: u.username,
-					staffId: u.staffID,
-					fullName: u.fullName,
-					institution: u.institution,
-					rolename: u.rolename,
-					email: u.email,
-					mobileNumber: u.mobileNumber,
-					status: u.status === "Active" ? "Active" : "Disable",
-					passwordExpirationDate: u.passwordExpirationDate,
-					dateLocked: "-",
-				})) ?? []
+			const data = await UserAccountsTable({ page })
 
-			setUsers(mappedUsers)
+			if (data) {
+				const mappedUsers: User[] =
+					data.data?.map((u, index) => ({
+						id: index + 1 + (data.page - 1) * data.limit,
+						username: u.username,
+						staffId: u.staffID,
+						fullName: u.fullName,
+						institution: u.institution,
+						rolename: u.rolename,
+						email: u.email,
+						mobileNumber: u.mobileNumber,
+						status: u.status === "Active" ? "Active" : "Disable",
+						passwordExpirationDate: u.passwordExpirationDate,
+						dateLocked: "-",
+					})) ?? []
+
+				setUsers(mappedUsers)
+				setLimit(data.limit)
+				setTotalPages(data.totalpages)
+				setPage(data.page)
+				setTotal(data.total)
+			}
 		}
+
 		fetchData()
-	}, [])
+	}, [page])
 
 	const handleEdit = (userId: number) => {
 		console.log("Edit user:", userId)
@@ -97,7 +109,7 @@ export default function UserTable() {
 					Add User
 				</button>
 			</div>
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto h-[450px]">
 				<table className="w-full text-sm">
 					<thead>
 						<tr className="bg-[#CCE3FF] text-[#112D4E]">
@@ -179,6 +191,42 @@ export default function UserTable() {
 						))}
 					</tbody>
 				</table>
+			</div>
+			<div className="flex text-sm justify-end items-center mt-1 space-x-2">
+				{/* Previous arrow */}
+				<button
+					onClick={() => setPage(Math.max(page - 1, 1))}
+					className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
+					&lt;
+				</button>
+
+				{/* Page numbers */}
+				{Array.from({ length: totalPages }, (_, i) => i + 1)
+					.filter((p) => {
+						// Show first, last, current, and neighbors
+						return (
+							p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)
+						)
+					})
+					.map((p, idx, arr) => (
+						<React.Fragment key={p}>
+							{idx > 0 && p - arr[idx - 1] > 1 && (
+								<span className="px-1">...</span>
+							)}
+							<button onClick={() => setPage(p)}>{p}</button>
+						</React.Fragment>
+					))}
+
+				{/* Next arrow */}
+				<button
+					onClick={() => setPage(Math.min(page + 1, totalPages))}
+					className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
+					&gt;
+				</button>
+			</div>
+			<div className="text-sm text-gray-500 mb-2">
+				Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
+				{total} entries
 			</div>
 			<AddUserModal
 				isOpen={showAddModal}

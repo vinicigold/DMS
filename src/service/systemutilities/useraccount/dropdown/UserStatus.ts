@@ -10,7 +10,7 @@ export async function UserStatus(): Promise<AccountStatus[]> {
 	try {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const res = await fetch(`${API_BASE}/dms/useraccount/accountstatus`, {
+		const res = await fetch(`${API_BASE}/dms/usersaccount/account-status`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
