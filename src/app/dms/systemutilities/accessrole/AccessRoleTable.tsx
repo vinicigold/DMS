@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { SquarePen, ToggleLeft, ToggleRight, CirclePlus } from "lucide-react"
 import { FetchAccessRoleTable } from "@/service/systemutilities/accessrole/table/FetchAccessRoleTable"
 import AddRoleModal from "@/components/modal/AddRoleModal"
-// import EditRoleModal from "@/components/modal/EditRoleModal"
+import EditRoleModal from "@/components/modal/EditRoleModal"
 
 interface Role {
 	roleid: number
@@ -15,8 +15,8 @@ interface Role {
 export default function AccessRoleTable() {
 	const [roles, setRoles] = useState<Role[]>([])
 	const [addRoleModalOpen, setAddRoleModalOpen] = useState(false)
-	// const [editRoleModalOpen, setEditRoleModalOpen] = useState(false)
-	// const [selectedRole, setSelectedRole] = useState<Role | null>(null)
+	const [editRoleModalOpen, setEditRoleModalOpen] = useState(false)
+	const [selectedRole, setSelectedRole] = useState<Role | null>(null)
 	const [page, setPage] = useState(1)
 	const [totalPages, setTotalPages] = useState(1)
 	const [limit, setLimit] = useState<number>(0)
@@ -36,10 +36,10 @@ export default function AccessRoleTable() {
 		loadRoles()
 	}, [page])
 
-	// const handleEdit = (role: Role) => {
-	// 	setSelectedRole(role)
-	// 	setEditRoleModalOpen(true)
-	// }
+	const handleEdit = (role: Role) => {
+		setSelectedRole(role)
+		setEditRoleModalOpen(true)
+	}
 
 	const handleToggleEnabled = (roleid: number) => {
 		setRoles((prev) =>
@@ -94,7 +94,7 @@ export default function AccessRoleTable() {
 								<td className="px-3 py-2">
 									<div className="flex justify-center gap-2">
 										<button
-											// onClick={() => handleEdit(role)}
+											onClick={() => handleEdit(role)}
 											title="Edit Role"
 											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
@@ -116,51 +116,69 @@ export default function AccessRoleTable() {
 					</tbody>
 				</table>
 			</div>
-			<div className="flex text-sm justify-end items-center mt-1 space-x-2">
-				{/* Previous arrow */}
-				<button
-					onClick={() => setPage(Math.max(page - 1, 1))}
-					className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
-					&lt;
-				</button>
+			<div className="flex items-center justify-between text-sm mt-3 mb-1 space-x-2">
+				<div className="text-gray-500">
+					Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
+					{total} entries
+				</div>
+				{/* Pagination buttons */}
+				<div className="flex items-center space-x-1">
+					<button
+						onClick={() => setPage(Math.max(page - 1, 1))}
+						className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
+						&lt;
+					</button>
 
-				{/* Page numbers */}
-				{Array.from({ length: totalPages }, (_, i) => i + 1)
-					.filter((p) => {
-						// Show first, last, current, and neighbors
-						return (
-							p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)
+					{Array.from({ length: totalPages }, (_, i) => i + 1)
+						.filter(
+							(p) =>
+								p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)
 						)
-					})
-					.map((p, idx, arr) => (
-						<React.Fragment key={p}>
-							{idx > 0 && p - arr[idx - 1] > 1 && (
-								<span className="px-1">...</span>
-							)}
-							<button onClick={() => setPage(p)}>{p}</button>
-						</React.Fragment>
-					))}
+						.map((p, idx, arr) => (
+							<React.Fragment key={p}>
+								{idx > 0 && p - arr[idx - 1] > 1 && (
+									<span className="px-1">...</span>
+								)}
+								<button
+									onClick={() => setPage(p)}
+									className={`px-2 py-1 rounded-lg ${
+										p === page
+											? "bg-[#CCE3FF] text-[#112D4E]"
+											: "bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]"
+									}`}>
+									{p}
+								</button>
+							</React.Fragment>
+						))}
 
-				{/* Next arrow */}
-				<button
-					onClick={() => setPage(Math.min(page + 1, totalPages))}
-					className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
-					&gt;
-				</button>
+					<button
+						onClick={() => setPage(Math.min(page + 1, totalPages))}
+						className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
+						&gt;
+					</button>
+				</div>
+
+				{/* Showing entries */}
 			</div>
-			<div className="text-sm text-gray-500 mb-2">
-				Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
-				{total} entries
-			</div>
+
 			<AddRoleModal
 				isOpen={addRoleModalOpen}
 				onClose={() => setAddRoleModalOpen(false)}
 			/>
-			{/* <EditRoleModal
+			<EditRoleModal
 				isOpen={editRoleModalOpen}
 				onClose={() => setEditRoleModalOpen(false)}
 				roleData={selectedRole}
-			/> */}
+				onUpdate={(updatedRole) => {
+					setRoles((prev) =>
+						prev.map((role) =>
+							role.roleid === updatedRole.roleid
+								? { ...role, ...updatedRole }
+								: role
+						)
+					)
+				}}
+			/>
 		</div>
 	)
 }

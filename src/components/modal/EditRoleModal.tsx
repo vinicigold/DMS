@@ -1,30 +1,34 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import { X, UserRoundCog, Save } from "lucide-react"
+import { EditRole } from "@/service/systemutilities/accessrole/EditRole"
 
 interface EditRoleModalProps {
 	readonly isOpen: boolean
 	readonly onClose: () => void
-	readonly roleData: RoleData | null
+	readonly roleData: Role | null
+	readonly onUpdate: (updatedRole: Role) => void
 }
 
-interface RoleData {
-	id?: string | number
-	name: string
+interface Role {
+	roleid: number
+	accessname: string
 	description: string
-	isactive: boolean
+	status: boolean
 }
 
 export default function EditRoleModal({
 	isOpen,
 	onClose,
 	roleData,
+	onUpdate,
 }: EditRoleModalProps) {
 	const [isLoading, setIsLoading] = useState(false)
-	const [formData, setFormData] = useState<RoleData>({
-		name: "",
+	const [formData, setFormData] = useState<Role>({
+		roleid: 0,
+		accessname: "",
 		description: "",
-		isactive: true,
+		status: true,
 	})
 
 	// Load roleData when modal opens
@@ -42,7 +46,7 @@ export default function EditRoleModal({
 		const { name, value } = e.target
 		setFormData((prev) => ({
 			...prev,
-			[name]: name === "isactive" ? value === "true" : value,
+			[name]: name === "status" ? value === "true" : value,
 		}))
 	}
 
@@ -50,16 +54,31 @@ export default function EditRoleModal({
 		e.preventDefault()
 		setIsLoading(true)
 
-		console.log("Updating role with data:", formData)
+		const data = await EditRole(formData)
 
-		// simulate API call
-		await new Promise((res) => setTimeout(res, 1000))
+		if (data) {
+			console.log("Role updated:", data)
+			onUpdate({
+				roleid: formData.roleid,
+				accessname: data.data.Name,
+				description: data.data.Description,
+				status: data.data.IsActive,
+			})
+			setFormData({
+				roleid: 0,
+				accessname: "",
+				description: "",
+				status: true,
+			})
+			onClose()
+		} else {
+			console.log("Failed to edit role")
+		}
 
 		setIsLoading(false)
-		onClose()
 	}
 
-	if (!isOpen) return null // ⬅️ prevent rendering when closed
+	if (!isOpen) return null
 
 	return (
 		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -85,13 +104,15 @@ export default function EditRoleModal({
 				{/* Form */}
 				<form onSubmit={handleSubmit} className="p-6 space-y-4">
 					<div>
-						<label className="block text-[#112D4E] font-semibold mb-2 text-sm">
+						<label
+							htmlFor="name"
+							className="block text-[#112D4E] font-semibold mb-2 text-sm">
 							Role Name *
 						</label>
 						<input
 							type="text"
-							name="name"
-							value={formData.name}
+							name="accessname"
+							value={formData.accessname}
 							onChange={handleChange}
 							required
 							placeholder="e.g., HR Manager"
@@ -100,7 +121,9 @@ export default function EditRoleModal({
 					</div>
 
 					<div>
-						<label className="block text-[#112D4E] font-semibold mb-2 text-sm">
+						<label
+							htmlFor="name"
+							className="block text-[#112D4E] font-semibold mb-2 text-sm">
 							Description *
 						</label>
 						<textarea
@@ -115,12 +138,14 @@ export default function EditRoleModal({
 					</div>
 
 					<div>
-						<label className="block text-[#112D4E] font-semibold mb-2 text-sm">
+						<label
+							htmlFor="name"
+							className="block text-[#112D4E] font-semibold mb-2 text-sm">
 							Role Status *
 						</label>
 						<select
-							name="isactive"
-							value={formData.isactive.toString()}
+							name="status"
+							value={formData.status.toString()}
 							onChange={handleChange}
 							className="w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF]">
 							<option value="true">Active</option>
@@ -129,12 +154,6 @@ export default function EditRoleModal({
 					</div>
 
 					<div className="flex gap-4 mt-6">
-						<button
-							type="button"
-							onClick={onClose}
-							className="flex-1 border border-gray-300 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-100">
-							Cancel
-						</button>
 						<button
 							type="submit"
 							disabled={isLoading}

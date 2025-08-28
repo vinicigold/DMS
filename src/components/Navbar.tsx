@@ -68,7 +68,7 @@ const navItems: NavItem[] = [
 			{
 				id: 51,
 				name: "Access Matrix",
-				link: "/dms/apireferences/doctype",
+				link: "/dms/systemutilities/accessmatrix",
 			},
 			{
 				id: 52,

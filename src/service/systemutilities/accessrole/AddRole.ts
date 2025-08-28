@@ -2,7 +2,7 @@ interface AddRolePayload {
 	code: string
 	name: string
 	description: string
-	isactive: boolean
+	status: boolean
 }
 
 export async function AddRole(payload: AddRolePayload): Promise<boolean> {

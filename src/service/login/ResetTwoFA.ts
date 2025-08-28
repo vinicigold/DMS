@@ -11,7 +11,7 @@ export async function ResetTwoFA(
 ): Promise<ResetResponse | null> {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const res = await fetch(`${API_BASE}/dms/reset-two-fa`, {
+		const res = await fetch(`${API_BASE}/dms/auth/reset-two-fa`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(reset),

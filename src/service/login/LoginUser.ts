@@ -14,7 +14,7 @@ export async function LoginUser(
 ): Promise<{ status: number; data: LoginUserResponse } | null> {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const res = await fetch(`${API_BASE}/dms/login`, {
+		const res = await fetch(`${API_BASE}/dms/auth/login`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(login),

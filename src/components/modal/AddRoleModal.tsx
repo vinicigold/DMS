@@ -12,7 +12,7 @@ interface RoleData {
 	code: string
 	name: string
 	description: string
-	isactive: boolean
+	status: boolean
 }
 
 export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
@@ -22,14 +22,14 @@ export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
 		code: "",
 		name: "",
 		description: "",
-		isactive: true,
+		status: true,
 	})
 
 	const initialFormData: RoleData = {
 		code: "",
 		name: "",
 		description: "",
-		isactive: true,
+		status: true,
 	}
 	const handleChange = (
 		e: React.ChangeEvent<
@@ -51,7 +51,7 @@ export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
 
 		if (data) {
 			onClose()
-			setFormData({ code: "", name: "", description: "", isactive: true })
+			setFormData({ code: "", name: "", description: "", status: true })
 		} else {
 			setError("Failed to add role")
 		}
@@ -151,7 +151,7 @@ export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
 								id="isactive"
 								name="isactive"
 								onChange={handleChange}
-								value={formData.isactive.toString()}
+								value={formData.status.toString()}
 								className="w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200">
 								<option value="true">Active</option>
 								<option value="false">Inactive</option>
