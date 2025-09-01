@@ -1,10 +1,8 @@
 "use client"
 import type React from "react"
 import { useEffect, useState } from "react"
-import {
-	GetUserInfo,
-	RegisterUser,
-} from "../../app/dms/systemutilities/useraccount/Route"
+import { GetUserInfo } from "@/service/systemutilities/useraccount/GetUserInfo"
+import { RegisterUser } from "@/service/systemutilities/useraccount/RegisterUser"
 import { X, UserRoundPlus, UserRoundSearch } from "lucide-react"
 import { EmployeeStatus } from "@/service/systemutilities/useraccount/dropdown/EmployeeStatus"
 import { UserRole } from "@/service/systemutilities/useraccount/dropdown/UserRole"
@@ -41,14 +39,9 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 		employeeStatusId: 0,
 	}
 
-	const handleClose = () => {
-		setFormData(initialFormData)
-		onClose()
-	}
-
 	const [isLoading, setIsLoading] = useState(false)
 	const [isSearching, setIsSearching] = useState(false)
-	const [error, setError] = useState("")
+	const [error, setError] = useState<string | null>(null)
 
 	const [roleOptions, setRoleOptions] = useState<
 		{ id: number; name: string }[]
@@ -59,6 +52,13 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 	const [accountStatusOptions, setAccountStatusOptions] = useState<
 		{ id: number; name: string }[]
 	>([])
+
+	useEffect(() => {
+		if (error) {
+			const timer = setTimeout(() => setError(null), 3000) // 3000ms = 3s
+			return () => clearTimeout(timer) // cleanup if component unmounts
+		}
+	}, [error])
 
 	useEffect(() => {
 		const fetchDropDown = async () => {
@@ -165,10 +165,16 @@ export default function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 		setIsLoading(false)
 
 		if (success) {
+			onClose()
 			setFormData(initialFormData)
 		} else {
 			setError("Failed to create user")
 		}
+	}
+
+	const handleClose = () => {
+		setFormData(initialFormData)
+		onClose()
 	}
 
 	if (!isOpen) return null

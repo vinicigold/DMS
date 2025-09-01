@@ -4,9 +4,11 @@ import { SquarePen, ToggleLeft, ToggleRight, CirclePlus } from "lucide-react"
 import { FetchAccessRoleTable } from "@/service/systemutilities/accessrole/table/FetchAccessRoleTable"
 import AddRoleModal from "@/components/modal/AddRoleModal"
 import EditRoleModal from "@/components/modal/EditRoleModal"
+import { EditRole } from "@/service/systemutilities/accessrole/EditRole"
 
 interface Role {
 	roleid: number
+	code: string
 	accessname: string
 	description: string
 	status: boolean
@@ -41,12 +43,25 @@ export default function AccessRoleTable() {
 		setEditRoleModalOpen(true)
 	}
 
-	const handleToggleEnabled = (roleid: number) => {
-		setRoles((prev) =>
-			prev.map((role) =>
-				role.roleid === roleid ? { ...role, status: !role.status } : role
+	const handleToggleEnabled = async (role: Role) => {
+		try {
+			await EditRole({
+				roleid: role.roleid,
+				accessname: role.accessname,
+				description: role.description,
+				status: !role.status,
+			})
+
+			// If successful, update state
+			setRoles((prev) =>
+				prev.map((r) =>
+					r.roleid === role.roleid ? { ...r, status: !role.status } : r
+				)
 			)
-		)
+		} catch (error) {
+			console.error(error)
+			alert("Failed to update role status. Please try again.")
+		}
 	}
 
 	return (
@@ -65,6 +80,7 @@ export default function AccessRoleTable() {
 					<thead>
 						<tr className="bg-[#CCE3FF] text-[#112D4E]">
 							<th className="px-3 py-2 text-left font-semibold">Role ID</th>
+							<th className="px-3 py-2 text-left font-semibold">Code</th>
 							<th className="px-3 py-2 text-left font-semibold">Access Name</th>
 							<th className="px-3 py-2 text-left font-semibold">Description</th>
 							<th className="px-3 py-2 text-left font-semibold">Status</th>
@@ -79,6 +95,7 @@ export default function AccessRoleTable() {
 									index % 2 === 0 ? "bg-white" : "bg-gray-50"
 								} hover:bg-[#CCE3FF]/30 transition-colors`}>
 								<td className="px-3 py-2 font-medium">{role.roleid}</td>
+								<td className="px-3 py-2">{role.code}</td>
 								<td className="px-3 py-2">{role.accessname}</td>
 								<td className="px-3 py-2">{role.description}</td>
 								<td className="px-3 py-2">
@@ -100,7 +117,7 @@ export default function AccessRoleTable() {
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
 										<button
-											onClick={() => handleToggleEnabled(role.roleid)}
+											onClick={() => handleToggleEnabled(role)}
 											title={role.status ? "Disable Role" : "Activate Role"}
 											className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none">
 											{role.status ? (
@@ -121,7 +138,6 @@ export default function AccessRoleTable() {
 					Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
 					{total} entries
 				</div>
-				{/* Pagination buttons */}
 				<div className="flex items-center space-x-1">
 					<button
 						onClick={() => setPage(Math.max(page - 1, 1))}
@@ -157,13 +173,13 @@ export default function AccessRoleTable() {
 						&gt;
 					</button>
 				</div>
-
-				{/* Showing entries */}
 			</div>
-
 			<AddRoleModal
 				isOpen={addRoleModalOpen}
 				onClose={() => setAddRoleModalOpen(false)}
+				onAdd={(newRole: Role) => {
+					setRoles((prev) => [...prev, newRole])
+				}}
 			/>
 			<EditRoleModal
 				isOpen={editRoleModalOpen}

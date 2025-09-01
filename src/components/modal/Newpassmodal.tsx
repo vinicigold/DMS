@@ -1,13 +1,13 @@
 "use client"
 import React, { useState } from "react"
-import {
-	LockClosedIcon,
-	XMarkIcon,
-	EyeIcon,
-	EyeSlashIcon,
-	ExclamationTriangleIcon,
-	CheckCircleIcon,
-} from "@heroicons/react/24/solid"
+// import {
+// 	LockClosedIcon,
+// 	XMarkIcon,
+// 	EyeIcon,
+// 	EyeSlashIcon,
+// 	ExclamationTriangleIcon,
+// 	CheckCircleIcon,
+// } from "@heroicons/react/24/solid"
 
 interface NewPassModalProps {
 	readonly isOpen: boolean
@@ -97,7 +97,7 @@ export default function NewPassModal({
 				<div className="flex item-center justify-between p-6 border-b border-gray-100">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
-							<LockClosedIcon className="w-5 h-5 text-white" />
+							{/* <LockClosedIcon className="w-5 h-5 text-white" /> */}
 						</div>
 						<div>
 							<h3 className="text-xl font-bold text-[#112D4E]">New Password</h3>
@@ -107,7 +107,7 @@ export default function NewPassModal({
 					<button
 						onClick={onClose}
 						className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-						<XMarkIcon className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors" />
+						{/* <XMarkIcon className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors" /> */}
 					</button>
 				</div>
 				<form onSubmit={handleSubmit} className="p-6">
@@ -118,7 +118,7 @@ export default function NewPassModal({
 							New Password
 						</label>
 						<div className="relative">
-							<LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+							{/* <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" /> */}
 							<input
 								type={showPassword.newPassword ? "text" : "password"}
 								id="newPassword"
@@ -136,11 +136,11 @@ export default function NewPassModal({
 								type="button"
 								onClick={() => togglePasswordVisibility("newPassword")}
 								className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#3F72AF] transition-colors">
-								{showPassword.newPassword ? (
+								{/* {showPassword.newPassword ? (
 									<EyeSlashIcon className="w-5 h-5" />
 								) : (
 									<EyeIcon className="w-5 h-5" />
-								)}
+								)} */}
 							</button>
 						</div>
 						{password.newPassword && (
@@ -178,7 +178,7 @@ export default function NewPassModal({
 							Confirm Password
 						</label>
 						<div className="relative">
-							<LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+							{/* <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" /> */}
 							<input
 								type={showPassword.confirmPassword ? "text" : "password"}
 								id="confirmPassword"
@@ -202,17 +202,17 @@ export default function NewPassModal({
 								type="button"
 								onClick={() => togglePasswordVisibility("confirmPassword")}
 								className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#3F72AF] transition-colors">
-								{showPassword.confirmPassword ? (
+								{/* {showPassword.confirmPassword ? (
 									<EyeSlashIcon className="w-5 h-5" />
 								) : (
 									<EyeIcon className="w-5 h-5" />
-								)}
+								)} */}
 							</button>
 						</div>
 						{password.confirmPassword &&
 							password.newPassword !== password.confirmPassword && (
 								<p className='"text-red-500 text-sm mt-2 flex items-center gap-1'>
-									<ExclamationTriangleIcon className="w-4 h-4" />
+									{/* <ExclamationTriangleIcon className="w-4 h-4" /> */}
 									Passwords do not match
 								</p>
 							)}
@@ -236,13 +236,13 @@ export default function NewPassModal({
                     ${
 											!errors.includes(req) ? "text-green-600" : "text-gray-500"
 										}`}>
-										<CheckCircleIcon
+										{/* <CheckCircleIcon
 											className={`w-3 h-3 ${
 												!errors.includes(req)
 													? "text-green-600"
 													: "text-gray-400"
 											}`}
-										/>
+										/> */}
 										{req}
 									</li>
 								))}
@@ -266,7 +266,7 @@ export default function NewPassModal({
 							</>
 						) : (
 							<>
-								<CheckCircleIcon className="w-5 h-5" />
+								{/* <CheckCircleIcon className="w-5 h-5" /> */}
 								Update Password
 							</>
 						)}

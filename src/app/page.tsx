@@ -202,6 +202,7 @@ export default function Login() {
 						console.log("Submitted OTP:", otp)
 						setShowOtpModal(false)
 						setShowQRModal(false)
+						router.push("dms/dashboard")
 					}}
 				/>
 			)}

@@ -83,7 +83,6 @@ export default function EditRoleModal({
 	return (
 		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
 			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-				{/* Header */}
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
@@ -100,8 +99,6 @@ export default function EditRoleModal({
 						<X className="w-4 h-4 text-gray-600" />
 					</button>
 				</div>
-
-				{/* Form */}
 				<form onSubmit={handleSubmit} className="p-6 space-y-4">
 					<div>
 						<label

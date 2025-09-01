@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState } from "react"
-import { CirclePlus } from "lucide-react"
 
 interface Role {
 	RoleID: number
@@ -108,17 +107,14 @@ export default function AccessMatrixTable() {
 									</td>
 								</tr>
 
-								{/* Permission rows */}
 								{menu.permissions.map((perm, permIdx) => (
 									<tr
 										key={perm.permissionId}
 										className={`${
 											permIdx % 2 === 0 ? "bg-white" : "bg-gray-50"
-										} hover:bg-[#CCE3FF]/30 transition-colors border`}>
-										{/* Permission name */}
+										} hover:bg-[#CCE3FF]/30 transition-colors border-b-1`}>
 										<td className="px-3 py-2 pl-4">{perm.action}</td>
 
-										{/* Checkboxes for each role */}
 										{roles.map((role) => (
 											<td
 												key={`${perm.permissionId}-${role.RoleID}`}

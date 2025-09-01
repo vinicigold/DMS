@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import AddUserModal from "../../../../components/modal/AddUserModal"
 import { UserAccountsTable } from "@/service/systemutilities/useraccount/table/UserAccountTable"
+import EditUserModal from "@/components/modal/EditUserModal"
 
 interface User {
 	id: number
@@ -31,6 +32,8 @@ export default function UserTable() {
 	const [totalPages, setTotalPages] = useState(1)
 	const [limit, setLimit] = useState<number>(0)
 	const [total, setTotal] = useState<number>(0)
+	const [showEditUserModal, setShowEditUserModal] = useState(false)
+	const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -63,8 +66,9 @@ export default function UserTable() {
 		fetchData()
 	}, [page])
 
-	const handleEdit = (userId: number) => {
-		console.log("Edit user:", userId)
+	const handleEdit = (user: User) => {
+		setSelectedUser(user)
+		setShowEditUserModal(true)
 	}
 
 	const handleReset = (userId: number) => {
@@ -160,7 +164,7 @@ export default function UserTable() {
 								<td className="px-3 py-2">
 									<div className="flex justify-center gap-2">
 										<button
-											onClick={() => handleEdit(user.id)}
+											onClick={() => handleEdit(user)}
 											title="Edit User"
 											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
@@ -192,46 +196,56 @@ export default function UserTable() {
 					</tbody>
 				</table>
 			</div>
-			<div className="flex text-sm justify-end items-center mt-1 space-x-2">
-				{/* Previous arrow */}
-				<button
-					onClick={() => setPage(Math.max(page - 1, 1))}
-					className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
-					&lt;
-				</button>
+			<div className="flex items-center justify-between text-sm mt-3 mb-1 space-x-2">
+				<div className="text-gray-500">
+					Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
+					{total} entries
+				</div>
+				<div className="flex items-center space-x-1">
+					<button
+						onClick={() => setPage(Math.max(page - 1, 1))}
+						className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
+						&lt;
+					</button>
 
-				{/* Page numbers */}
-				{Array.from({ length: totalPages }, (_, i) => i + 1)
-					.filter((p) => {
-						// Show first, last, current, and neighbors
-						return (
-							p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)
+					{Array.from({ length: totalPages }, (_, i) => i + 1)
+						.filter(
+							(p) =>
+								p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)
 						)
-					})
-					.map((p, idx, arr) => (
-						<React.Fragment key={p}>
-							{idx > 0 && p - arr[idx - 1] > 1 && (
-								<span className="px-1">...</span>
-							)}
-							<button onClick={() => setPage(p)}>{p}</button>
-						</React.Fragment>
-					))}
+						.map((p, idx, arr) => (
+							<React.Fragment key={p}>
+								{idx > 0 && p - arr[idx - 1] > 1 && (
+									<span className="px-1">...</span>
+								)}
+								<button
+									onClick={() => setPage(p)}
+									className={`px-2 py-1 rounded-lg ${
+										p === page
+											? "bg-[#CCE3FF] text-[#112D4E]"
+											: "bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]"
+									}`}>
+									{p}
+								</button>
+							</React.Fragment>
+						))}
 
-				{/* Next arrow */}
-				<button
-					onClick={() => setPage(Math.min(page + 1, totalPages))}
-					className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
-					&gt;
-				</button>
-			</div>
-			<div className="text-sm text-gray-500 mb-2">
-				Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
-				{total} entries
+					<button
+						onClick={() => setPage(Math.min(page + 1, totalPages))}
+						className="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-[#CCE3FF]">
+						&gt;
+					</button>
+				</div>
 			</div>
 			<AddUserModal
 				isOpen={showAddModal}
 				onClose={() => setShowAddModal(false)}
 			/>
+			{/* <EditUserModal
+				isOpen={showEditUserModal}
+				userData={selectedUser}
+				onClose={() => setShowEditUserModal(false)}
+			/> */}
 		</div>
 	)
 }

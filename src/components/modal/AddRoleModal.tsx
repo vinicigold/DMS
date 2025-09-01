@@ -6,30 +6,43 @@ import { X, UserRoundCog, CirclePlus } from "lucide-react"
 interface AddRoleModalProps {
 	readonly isOpen: boolean
 	readonly onClose: () => void
+	readonly onAdd: (role: Role) => void
+}
+
+interface Role {
+	roleid: number
+	code: string
+	accessname: string
+	description: string
+	status: boolean
 }
 
 interface RoleData {
 	code: string
 	name: string
 	description: string
-	status: boolean
+	isactive: boolean
 }
 
-export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
+export default function AddRoleModal({
+	isOpen,
+	onClose,
+	onAdd,
+}: AddRoleModalProps) {
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState("")
 	const [formData, setFormData] = useState<RoleData>({
 		code: "",
 		name: "",
 		description: "",
-		status: true,
+		isactive: true,
 	})
 
 	const initialFormData: RoleData = {
 		code: "",
 		name: "",
 		description: "",
-		status: true,
+		isactive: true,
 	}
 	const handleChange = (
 		e: React.ChangeEvent<
@@ -47,13 +60,28 @@ export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
 		setIsLoading(true)
 		setError("")
 
-		const data = await AddRole(formData)
+		try {
+			const data = await AddRole(formData)
+			console.log("AddRole response:", data)
 
-		if (data) {
-			onClose()
-			setFormData({ code: "", name: "", description: "", status: true })
-		} else {
+			if (data) {
+				const newRole: Role = {
+					roleid: data.roleid,
+					code: data.code,
+					accessname: data.accessname,
+					description: data.description,
+					status: data.status,
+				}
+
+				onAdd(newRole) // <-- update parent state
+				onClose()
+				setFormData(initialFormData)
+			} else {
+				setError("Failed to add role")
+			}
+		} catch (err) {
 			setError("Failed to add role")
+			console.error(err)
 		}
 
 		setIsLoading(false)
@@ -151,7 +179,7 @@ export default function AddRoleModal({ isOpen, onClose }: AddRoleModalProps) {
 								id="isactive"
 								name="isactive"
 								onChange={handleChange}
-								value={formData.status.toString()}
+								value={formData.isactive.toString()}
 								className="w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200">
 								<option value="true">Active</option>
 								<option value="false">Inactive</option>

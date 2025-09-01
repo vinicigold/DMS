@@ -1,5 +1,6 @@
 interface ApiRole {
 	roleid: number
+	code: string
 	accessname: string
 	description: string
 	status: boolean
@@ -28,7 +29,7 @@ export async function FetchAccessRoleTable(
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: `${token}` || "",
+					Authorization: `${token}`,
 				},
 				credentials: "include",
 			}
