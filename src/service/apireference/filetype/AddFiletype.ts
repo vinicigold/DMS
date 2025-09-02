@@ -1,43 +1,42 @@
 import { create } from "zustand"
 
-interface EditDoctypePayload {
-	doctypeID: number
-	docTypeName: string
+interface AddFiletypePayload {
+	mimeType: string
+	description: string
+	status: boolean
 }
 
-interface EditDoctypeResponse {
+interface AddFiletypeResponse {
 	responseCode: number
 	message: string
 	results: {
-		doctypeId: number
-		doctypeName: string
-		createdAt: string
-		createdBy: number
-		modifiedAt: string
-		modifiedBy: number | null
+		id: number
+		mimeType: string
+		description: string
+		status: boolean
 	}
 }
 
-interface DoctypeEditStore {
+interface FiletypeAddStore {
 	isLoading: boolean
 	error: string | null
 	successMessage: string | null
-	editDoctype: (payload: EditDoctypePayload) => Promise<void>
+	addFiletype: (payload: AddFiletypePayload) => Promise<void>
 }
 
-export const EditDoctype = create<DoctypeEditStore>((set) => ({
+export const AddFiletype = create<FiletypeAddStore>((set) => ({
 	isLoading: false,
 	error: null,
 	successMessage: null,
 
-	editDoctype: async (payload: EditDoctypePayload) => {
+	addFiletype: async (payload: AddFiletypePayload) => {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
 		set({ isLoading: true, error: null, successMessage: null })
 
 		try {
-			const res = await fetch(`${API_BASE}/dms/document-type/update-document`, {
+			const res = await fetch(`${API_BASE}/dms/file-type/create-filetype`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -46,13 +45,13 @@ export const EditDoctype = create<DoctypeEditStore>((set) => ({
 				body: JSON.stringify(payload),
 			})
 
-			if (!res.ok) throw new Error("Failed to edit document type")
+			if (!res.ok) throw new Error("Failed to add file type")
 
-			const data: EditDoctypeResponse = await res.json()
+			const data: AddFiletypeResponse = await res.json()
 
 			set({
 				isLoading: false,
-				successMessage: data.message,
+				successMessage: data.message, // "File type created"
 			})
 		} catch (err) {
 			set({

@@ -7,9 +7,9 @@ import {
 	UserRoundPlus,
 	History,
 } from "lucide-react"
-import AddUserModal from "../../../../components/modal/AddUserModal"
+import AddUserModal from "../../../../components/modal/useraccountmodal/AddUserModal"
 import { UserAccountsTable } from "@/service/systemutilities/useraccount/table/UserAccountTable"
-import EditUserModal from "@/components/modal/EditUserModal"
+import EditUserModal from "@/components/modal/useraccountmodal/EditUserModal"
 
 interface User {
 	id: number

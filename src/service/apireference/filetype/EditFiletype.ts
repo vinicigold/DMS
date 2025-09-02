@@ -1,44 +1,44 @@
 import { create } from "zustand"
 
-interface EditDoctypePayload {
-	doctypeID: number
-	docTypeName: string
+interface EditFileTypePayload {
+	fileTypeId: number
+	mimeType: string
+	description: string
+	status: boolean
 }
 
-interface EditDoctypeResponse {
+interface EditFileTypeResponse {
 	responseCode: number
 	message: string
 	results: {
-		doctypeId: number
-		doctypeName: string
-		createdAt: string
-		createdBy: number
-		modifiedAt: string
-		modifiedBy: number | null
+		id: number
+		mimeType: string
+		description: string
+		status: boolean
 	}
 }
 
-interface DoctypeEditStore {
+interface FileTypeEditStore {
 	isLoading: boolean
 	error: string | null
 	successMessage: string | null
-	editDoctype: (payload: EditDoctypePayload) => Promise<void>
+	editFileType: (payload: EditFileTypePayload) => Promise<void>
 }
 
-export const EditDoctype = create<DoctypeEditStore>((set) => ({
+export const EditFileType = create<FileTypeEditStore>((set) => ({
 	isLoading: false,
 	error: null,
 	successMessage: null,
 
-	editDoctype: async (payload: EditDoctypePayload) => {
+	editFileType: async (payload: EditFileTypePayload) => {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
 		set({ isLoading: true, error: null, successMessage: null })
 
 		try {
-			const res = await fetch(`${API_BASE}/dms/document-type/update-document`, {
-				method: "POST",
+			const res = await fetch(`${API_BASE}/dms/file-type/update-filetype`, {
+				method: "POST", // keep POST if your API expects it
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: `${token}`,
@@ -46,9 +46,9 @@ export const EditDoctype = create<DoctypeEditStore>((set) => ({
 				body: JSON.stringify(payload),
 			})
 
-			if (!res.ok) throw new Error("Failed to edit document type")
+			if (!res.ok) throw new Error("Failed to edit file type")
 
-			const data: EditDoctypeResponse = await res.json()
+			const data: EditFileTypeResponse = await res.json()
 
 			set({
 				isLoading: false,

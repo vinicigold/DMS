@@ -7,7 +7,9 @@ interface VerifyRegisterOtpResponse {
 	message: string
 }
 
-export async function VerifyRegisterOtp(payload: VerifyRegisterOtpPayload) {
+export async function VerifyRegisterOtp(
+	payload: VerifyRegisterOtpPayload
+): Promise<VerifyRegisterOtpResponse | false> {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -17,6 +19,7 @@ export async function VerifyRegisterOtp(payload: VerifyRegisterOtpPayload) {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(payload),
+			credentials: "include",
 		})
 
 		console.log(payload)
@@ -26,6 +29,7 @@ export async function VerifyRegisterOtp(payload: VerifyRegisterOtpPayload) {
 		}
 
 		const data: VerifyRegisterOtpResponse = await res.json()
+		localStorage.setItem("authToken", data.message)
 
 		return data
 	} catch (error) {

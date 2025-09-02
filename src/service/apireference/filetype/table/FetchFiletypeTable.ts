@@ -1,21 +1,22 @@
 import { create } from "zustand"
 
-interface Doctype {
-	doctypeid: number
-	doctypename: string
-	createdat: string
+interface Filetype {
+	id: number
+	mimeType: string
+	description: string
+	status: boolean
 }
 
-interface DoctypeApiResponse {
+interface FiletypeApiResponse {
 	page: number
 	limit: number
 	total: number
 	totalpages: number
-	data: Doctype[]
+	data: Filetype[]
 }
 
-interface DoctypeStore {
-	data: Doctype[]
+interface FiletypeStore {
+	data: Filetype[]
 	page: number
 	limit: number
 	total: number
@@ -23,10 +24,10 @@ interface DoctypeStore {
 	isLoading: boolean
 	error: string | null
 	setPage: (page: number) => void
-	fetchDoctypes: (page?: number, limit?: number) => Promise<void>
+	fetchFiletypes: (page?: number, limit?: number) => Promise<void>
 }
 
-export const FetchDoctypeTable = create<DoctypeStore>((set, get) => ({
+export const FetchFiletypeTable = create<FiletypeStore>((set, get) => ({
 	data: [],
 	page: 1,
 	limit: 10,
@@ -37,7 +38,7 @@ export const FetchDoctypeTable = create<DoctypeStore>((set, get) => ({
 
 	setPage: (page) => set({ page }),
 
-	fetchDoctypes: async (page?: number, limit?: number) => {
+	fetchFiletypes: async (page?: number, limit?: number) => {
 		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -52,7 +53,7 @@ export const FetchDoctypeTable = create<DoctypeStore>((set, get) => ({
 
 		try {
 			const res = await fetch(
-				`${API_BASE}/dms/document-type/alldocument-type?${query.toString()}`,
+				`${API_BASE}/dms/file-type/listall-filetype?${query.toString()}`,
 				{
 					method: "GET",
 					headers: {
@@ -63,11 +64,11 @@ export const FetchDoctypeTable = create<DoctypeStore>((set, get) => ({
 				}
 			)
 
-			if (!res.ok) throw new Error("Failed to fetch document types")
+			if (!res.ok) throw new Error("Failed to fetch file types")
 
 			const json = await res.json()
 
-			const results: DoctypeApiResponse = json.results
+			const results: FiletypeApiResponse = json.results
 
 			set({
 				data: results.data ?? [],

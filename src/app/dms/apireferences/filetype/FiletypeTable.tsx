@@ -1,32 +1,42 @@
 "use client"
 import React, { useEffect } from "react"
-import { SquarePen, Trash2, CirclePlus } from "lucide-react"
-import { FetchDoctypeTable } from "@/service/apireference/doctype/table/FetchDoctypeTable"
-import AddDoctypeModal from "@/components/modal/doctypemodal/AddDoctypeModal"
+import { SquarePen, CirclePlus, ToggleRight, ToggleLeft } from "lucide-react"
+import { FetchFiletypeTable } from "@/service/apireference/filetype/table/FetchFiletypeTable"
 import { useModalStore } from "@/service/modal/useModalStore"
-import { useDoctypeStore } from "@/service/apireference/doctype/useDoctypeStore"
-import EditDoctypeModal from "@/components/modal/doctypemodal/EditDoctypeModa"
+import AddFiletypeModal from "@/components/modal/filetypemodal/AddFiletypeModal"
+import EditFiletypeModal from "@/components/modal/filetypemodal/EditFiletypeModal"
+import { useFileTypeStore } from "@/service/apireference/filetype/useFiletypeStore"
 
-export default function DoctypeTable() {
-	const { data, page, limit, total, totalPages, setPage, fetchDoctypes } =
-		FetchDoctypeTable()
-	const { setSelectedDoctype } = useDoctypeStore()
+export default function FiletypeTabe() {
+	const { data, page, limit, total, totalPages, setPage, fetchFiletypes } =
+		FetchFiletypeTable()
+	const { setSelectedFileType } = useFileTypeStore()
 	const { openModal } = useModalStore()
-
-	// fetch data whenever page or limit changes
 	useEffect(() => {
-		fetchDoctypes(page, limit)
-	}, [page, limit, fetchDoctypes])
+		fetchFiletypes(page, limit)
+	}, [page, limit, fetchFiletypes])
+
+	const getStatusBadge = (status: boolean) => {
+		const baseClasses = "px-2 py-1 rounded-full text-xs font-medium"
+		return status
+			? `${baseClasses} bg-green-100 text-green-800`
+			: `${baseClasses} bg-red-100 text-red-800`
+	}
+
+	const handleToggleEnabled = (id: number, currentStatus: boolean) => {
+		console.log("Toggling filetype:", id, "new status:", !currentStatus)
+		// here you would call an API and then refresh with fetchFiletypes()
+	}
 
 	return (
 		<div className="bg-white text-[#112D4E] p-4 rounded-lg shadow-md">
 			<div className="flex justify-between items-center mb-4">
-				<h3 className="text-lg font-bold">Document Type</h3>
+				<h3 className="text-lg font-bold">File Type</h3>
 				<button
-					onClick={() => openModal("addDoc")}
+					onClick={() => openModal("addFile")}
 					className="bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-4 py-2 rounded-lg hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 flex items-center gap-2">
 					<CirclePlus className="w-4 h-4" />
-					Add Document Type
+					Add File Type
 				</button>
 			</div>
 
@@ -37,40 +47,51 @@ export default function DoctypeTable() {
 						<tr className="bg-[#CCE3FF] text-[#112D4E]">
 							<th className="px-3 py-2 text-left font-semibold">ID</th>
 							<th className="px-3 py-2 text-left font-semibold">
-								Document Type Name
+								File Mime Type
 							</th>
-							<th className="px-3 py-2 text-left font-semibold">
-								Date Created
-							</th>
+							<th className="px-3 py-2 text-left font-semibold">Description</th>
+							<th className="px-3 py-2 text-left font-semibold">Status</th>
 							<th className="px-3 py-2 text-center font-semibold">Function</th>
 						</tr>
 					</thead>
 					<tbody>
 						{data.map((doc) => (
-							<tr key={doc.doctypeid} className="border-b hover:bg-gray-50">
-								<td className="px-3 py-2">{doc.doctypeid}</td>
-								<td className="px-3 py-2">{doc.doctypename}</td>
+							<tr key={doc.id} className="border-b hover:bg-gray-50">
+								<td className="px-3 py-2">{doc.id}</td>
+								<td className="px-3 py-2">{doc.mimeType}</td>
+								<td className="px-3 py-2">{doc.description}</td>
 								<td className="px-3 py-2">
-									{new Date(doc.createdat).toLocaleDateString()}
+									<span className={getStatusBadge(doc.status)}>
+										{doc.status ? "Active" : "Disabled"}
+									</span>
 								</td>
 								<td className="px-3 py-2">
 									<div className="flex justify-center gap-2">
 										<button
 											onClick={() => {
-												setSelectedDoctype({
-													doctypeid: doc.doctypeid,
-													doctypename: doc.doctypename,
+												setSelectedFileType({
+													id: doc.id,
+													mimeType: doc.mimeType,
+													description: doc.description,
+													status: doc.status,
 												})
-												openModal("editDoc")
+												openModal("editFile")
 											}}
 											title="Edit Document Type"
-											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
+											className="hover:bg-[#cce3ff] p-1 rounded transition-all duration-200">
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
 										<button
-											title="Delete Document Type"
-											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
-											<Trash2 className="w-4 h-4 text-red-500 hover:text-[#112D4E]" />
+											onClick={() => handleToggleEnabled(doc.id, doc.status)}
+											title={
+												doc.status ? "Disable File Type" : "Activate File Type"
+											}
+											className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none">
+											{doc.status ? (
+												<ToggleRight className="h-6 w-6 text-green-400 hover:text-green-600" />
+											) : (
+												<ToggleLeft className="h-6 w-6 text-red-400 hover:text-red-600" />
+											)}
 										</button>
 									</div>
 								</td>
@@ -121,8 +142,8 @@ export default function DoctypeTable() {
 					</button>
 				</div>
 			</div>
-			<AddDoctypeModal />
-			<EditDoctypeModal />
+			<AddFiletypeModal />
+			<EditFiletypeModal />
 		</div>
 	)
 }

@@ -1,62 +1,71 @@
 "use client"
-import { useState } from "react"
-import { Upload, File, X } from "lucide-react"
+import React, { useState } from "react"
 
-export default function FileUpload() {
-	const [file, setFile] = useState<File | null>(null)
+export default function BatchFileUploadForm() {
+	const [files, setFiles] = useState<File[]>([])
+	const [message, setMessage] = useState("")
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
-			setFile(e.target.files[0])
+		if (e.target.files) {
+			setFiles(Array.from(e.target.files))
 		}
 	}
 
-	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-			setFile(e.dataTransfer.files[0])
-		}
-	}
 
-	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-		e.preventDefault()
+		if (files.length === 0) {
+			setMessage("Please select at least one file.")
+			return
+		}
+
+		const formData = new FormData()
+		// Append all files with the key expected by your backend
+		files.forEach((file) => formData.append("documents", file))
+
+		const response = await fetch(
+			"http://10.200.54.224:4000/dms/file-upload/batch-upload",
+			{
+				method: "POST",
+				body: formData,
+			}
+		)
+		const data = await response.json()
+		if (response.ok) {
+			setMessage("Files uploaded successfully!")
+			setFiles([])
+		} else {
+			setMessage(`Failed to upload files: ${data.message}`)
+		}
+		console.log("testing", data)
 	}
 
 	return (
-		<div className="flex items-center justify-center min-h-screen bg-gray-50">
-			<div
-				onDrop={handleDrop}
-				onDragOver={handleDragOver}
-				className="w-96 p-6 border-2 border-dashed border-gray-300 rounded-2xl bg-white shadow-sm hover:border-blue-400 transition-colors">
-				{!file ? (
-					<div className="flex flex-col items-center space-y-4">
-						<Upload className="w-10 h-10 text-gray-400" />
-						<p className="text-gray-600 text-center">
-							Drag & drop your file here, or{" "}
-							<label className="text-blue-500 cursor-pointer font-medium">
-								browse
-								<input
-									type="file"
-									className="hidden"
-									onChange={handleFileChange}
-								/>
-							</label>
-						</p>
-					</div>
-				) : (
-					<div className="flex items-center justify-between bg-gray-100 px-4 py-2 rounded-lg">
-						<div className="flex items-center gap-2">
-							<File className="w-6 h-6 text-gray-600" />
-							<span className="text-gray-700 text-sm">{file.name}</span>
-						</div>
-						<button
-							onClick={() => setFile(null)}
-							className="text-gray-500 hover:text-red-500">
-							<X className="w-5 h-5" />
-						</button>
-					</div>
-				)}
-			</div>
+		<div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
+			<h2 className="text-xl font-semibold mb-4">Upload File</h2>
+			<form onSubmit={handleSubmit} className="flex flex-col gap-4">
+				<input
+					type="file"
+					multiple
+					onChange={handleFileChange}
+					className="border p-2 rounded"
+				/>
+				<button
+					type="submit"
+					className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+					Upload
+				</button>
+			</form>
+
+			{files.length > 0 && (
+				<ul className="mt-4 list-disc list-inside">
+					{files.map((file, idx) => (
+						<li key={idx}>{file.name}</li>
+					))}
+				</ul>
+			)}
+
+			{message && <p className="mt-4 text-center">{message}</p>}
 		</div>
 	)
 }

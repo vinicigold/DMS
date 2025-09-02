@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react"
 import { SquarePen, ToggleLeft, ToggleRight, CirclePlus } from "lucide-react"
 import { FetchAccessRoleTable } from "@/service/systemutilities/accessrole/table/FetchAccessRoleTable"
-import AddRoleModal from "@/components/modal/AddRoleModal"
-import EditRoleModal from "@/components/modal/EditRoleModal"
+import AddRoleModal from "@/components/modal/accessrolemodal/AddRoleModal"
+import EditRoleModal from "@/components/modal/accessrolemodal/EditRoleModal"
 import { EditRole } from "@/service/systemutilities/accessrole/EditRole"
 
 interface Role {

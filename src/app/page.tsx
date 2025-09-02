@@ -1,12 +1,12 @@
 "use client"
 import { useState } from "react"
-import OtpModal from "@/components/modal/Otpmodal"
-import TwoFactorQRModal from "@/components/modal/TwoFactorQRModal"
+import OtpModal from "@/components/modal/loginmodal/Otpmodal"
+import TwoFactorQRModal from "@/components/modal/loginmodal/TwoFactorQRModal"
 import NewPassModal from "@/components/modal/Newpassmodal"
 import { useRouter } from "next/navigation"
 import { Building2, User, Lock, Eye, EyeOff, KeyRound } from "lucide-react"
 import { LoginUser } from "../service/login/LoginUser"
-import LoginOtpModal from "@/components/modal/LoginOtpModal"
+import LoginOtpModal from "@/components/modal/loginmodal/LoginOtpModal"
 import { maskEmail } from "@/utilities/mask"
 
 export default function Login() {
