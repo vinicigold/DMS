@@ -31,7 +31,24 @@ export default function FiletypeTabe() {
 	return (
 		<div className="bg-white text-[#112D4E] p-4 rounded-lg shadow-md">
 			<div className="flex justify-between items-center mb-4">
-				<h3 className="text-lg font-bold">File Type</h3>
+				<div className="flex items-center justify-between mb-2 text-xs">
+					<div>
+						Show{" "}
+						<select
+							value={limit}
+							onChange={(e) => {
+								const newLimit = parseInt(e.target.value, 10)
+								FetchFiletypeTable.getState().setLimit(newLimit)
+								setPage(1)
+							}}
+							className="border border-gray-300 rounded px-1 py-1">
+							<option value={10}>10</option>
+							<option value={20}>20</option>
+							<option value={50}>50</option>
+						</select>{" "}
+						entries
+					</div>
+				</div>
 				<button
 					onClick={() => openModal("addFile")}
 					className="bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-4 py-2 rounded-lg hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 flex items-center gap-2">

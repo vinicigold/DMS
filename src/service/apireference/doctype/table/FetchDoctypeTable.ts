@@ -23,6 +23,7 @@ interface DoctypeStore {
 	isLoading: boolean
 	error: string | null
 	setPage: (page: number) => void
+	setLimit: (limit: number) => void
 	fetchDoctypes: (page?: number, limit?: number) => Promise<void>
 }
 
@@ -36,6 +37,7 @@ export const FetchDoctypeTable = create<DoctypeStore>((set, get) => ({
 	error: null,
 
 	setPage: (page) => set({ page }),
+	setLimit: (limit) => set({ limit }),
 
 	fetchDoctypes: async (page?: number, limit?: number) => {
 		const token = localStorage.getItem("authToken")

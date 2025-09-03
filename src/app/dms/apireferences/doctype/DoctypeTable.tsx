@@ -13,7 +13,6 @@ export default function DoctypeTable() {
 	const { setSelectedDoctype } = useDoctypeStore()
 	const { openModal } = useModalStore()
 
-	// fetch data whenever page or limit changes
 	useEffect(() => {
 		fetchDoctypes(page, limit)
 	}, [page, limit, fetchDoctypes])
@@ -21,7 +20,24 @@ export default function DoctypeTable() {
 	return (
 		<div className="bg-white text-[#112D4E] p-4 rounded-lg shadow-md">
 			<div className="flex justify-between items-center mb-4">
-				<h3 className="text-lg font-bold">Document Type</h3>
+				<div className="flex items-center justify-between mb-2 text-xs">
+					<div>
+						Show{" "}
+						<select
+							value={limit}
+							onChange={(e) => {
+								const newLimit = parseInt(e.target.value, 10)
+								FetchDoctypeTable.getState().setLimit(newLimit)
+								setPage(1)
+							}}
+							className="border border-gray-300 rounded px-1 py-1">
+							<option value={10}>10</option>
+							<option value={20}>20</option>
+							<option value={50}>50</option>
+						</select>{" "}
+						entries
+					</div>
+				</div>
 				<button
 					onClick={() => openModal("addDoc")}
 					className="bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-4 py-2 rounded-lg hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 flex items-center gap-2">
@@ -31,7 +47,7 @@ export default function DoctypeTable() {
 			</div>
 
 			{/* Table */}
-			<div className="overflow-x-auto h-[450px]">
+			<div className="overflow-x-auto hide-scrollbar h-[450px]">
 				<table className="w-full text-sm">
 					<thead>
 						<tr className="bg-[#CCE3FF] text-[#112D4E]">

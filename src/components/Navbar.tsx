@@ -223,7 +223,9 @@ export default function Nav() {
 						<span className="text-sm font-semibold">
 							{user?.name || "Loading..."}
 						</span>
-						<span className="text-xs font-semibold">{user?.role || ""}</span>
+						<span className="text-xs font-semibold text-gray-600">
+							{user?.role || ""}
+						</span>
 					</div>
 					<ChevronUp
 						className={`ml-auto size-4 transition-transform ${
