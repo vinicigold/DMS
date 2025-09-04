@@ -129,7 +129,7 @@ export default function UploadFile() {
 										<div>
 											{file.progress < 100 ? (
 												<span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 animate-pulse">
-													Upload
+													Waiting
 												</span>
 											) : file.valid ? (
 												<span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
@@ -137,7 +137,7 @@ export default function UploadFile() {
 												</span>
 											) : (
 												<span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">
-													Error: {file.reason}
+													{file.reason}
 												</span>
 											)}
 										</div>

@@ -74,7 +74,7 @@ export default function LoginOtpModal({
 
 		if (data) {
 			onSubmit(otp)
-			console.log(data)
+			console.log("HELLO TESTING", data)
 		} else {
 			setError("Invalid OTP")
 		}

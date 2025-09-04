@@ -1,21 +1,34 @@
 "use client"
 import React, { useEffect } from "react"
-import { SquarePen, Trash2, CirclePlus } from "lucide-react"
-import { FetchDoctypeTable } from "@/service/apireference/doctype/table/FetchDoctypeTable"
-import AddDoctypeModal from "@/components/modal/doctypemodal/AddDoctypeModal"
+import { SquarePen, ToggleLeft, ToggleRight, CirclePlus } from "lucide-react"
 import { useModalStore } from "@/service/modal/useModalStore"
-import { useDoctypeStore } from "@/service/apireference/doctype/useDoctypeStore"
-import EditDoctypeModal from "@/components/modal/doctypemodal/EditDoctypeModal"
+import { useSystemConfigStore } from "@/service/apireference/systemconfig/useSystemConfigStore"
+import AddSysConfigModal from "@/components/modal/systemconfigmodal/AddSysConfigModal"
+import EditSysConfigModal from "@/components/modal/systemconfigmodal/EditSysConfigModal"
 
-export default function DoctypeTable() {
-	const { data, page, limit, total, totalPages, setPage, fetchDoctypes } =
-		FetchDoctypeTable()
-	const { setSelectedDoctype } = useDoctypeStore()
+export default function SysConfigTable() {
 	const { openModal } = useModalStore()
+	const {
+		configs,
+		page,
+		limit,
+		total,
+		totalPages,
+		setPage,
+		setLimit,
+		fetchConfigs,
+	} = useSystemConfigStore()
+
+	const getStatusBadge = (status: boolean) => {
+		const baseClasses = "px-2 py-1 rounded-full text-xs font-medium"
+		return status
+			? `${baseClasses} bg-green-100 text-green-800`
+			: `${baseClasses} bg-red-100 text-red-800`
+	}
 
 	useEffect(() => {
-		fetchDoctypes(page, limit)
-	}, [page, limit, fetchDoctypes])
+		fetchConfigs(page, limit)
+	}, [page, limit, fetchConfigs])
 
 	return (
 		<div className="bg-white text-[#112D4E] p-4 rounded-lg shadow-md">
@@ -25,11 +38,7 @@ export default function DoctypeTable() {
 						Show{" "}
 						<select
 							value={limit}
-							onChange={(e) => {
-								const newLimit = parseInt(e.target.value, 10)
-								FetchDoctypeTable.getState().setLimit(newLimit)
-								setPage(1)
-							}}
+							onChange={(e) => setLimit(Number(e.target.value))}
 							className="border border-gray-300 rounded px-1 py-1">
 							<option value={10}>10</option>
 							<option value={20}>20</option>
@@ -39,54 +48,54 @@ export default function DoctypeTable() {
 					</div>
 				</div>
 				<button
-					onClick={() => openModal("addDoc")}
+					onClick={() => openModal("addSysConfig")}
 					className="bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-4 py-2 rounded-lg hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 flex items-center gap-2">
 					<CirclePlus className="w-4 h-4" />
-					Add Document Type
+					Add System Configuration
 				</button>
 			</div>
-
-			{/* Table */}
 			<div className="overflow-x-auto hide-scrollbar h-[450px]">
 				<table className="w-full text-sm">
 					<thead>
 						<tr className="bg-[#CCE3FF] text-[#112D4E]">
 							<th className="px-3 py-2 text-left font-semibold">ID</th>
-							<th className="px-3 py-2 text-left font-semibold">
-								Document Type Name
-							</th>
-							<th className="px-3 py-2 text-left font-semibold">
-								Date Created
-							</th>
+							<th className="px-3 py-2 text-left font-semibold">System Name</th>
+							<th className="px-3 py-2 text-left font-semibold">IP Address</th>
+							<th className="px-3 py-2 text-center font-semibold">Drive</th>
+							<th className="px-3 py-2 text-center font-semibold">Path</th>
+							<th className="px-3 py-2 text-center font-semibold">Status</th>
 							<th className="px-3 py-2 text-center font-semibold">Function</th>
 						</tr>
 					</thead>
 					<tbody>
-						{data.map((doc) => (
-							<tr key={doc.doctypeid} className="border-b hover:bg-gray-50">
-								<td className="px-3 py-2">{doc.doctypeid}</td>
-								<td className="px-3 py-2">{doc.doctypename}</td>
-								<td className="px-3 py-2">
-									{new Date(doc.createdat).toLocaleDateString()}
+						{configs.map((config) => (
+							<tr
+								key={config.systemconfigid}
+								className="border-b hover:bg-gray-50">
+								<td className="px-3 py-2">{config.systemconfigid}</td>
+								<td className="px-3 py-2">{config.systemName}</td>
+								<td className="px-3 py-2">{config.ipAddress}</td>
+								<td className="px-3 py-2 text-center">{config.drive}</td>
+								<td className="px-3 py-2 text-center">{config.path}</td>
+								<td className="px-3 py-2 text-center">
+									<span className={getStatusBadge(config.status)}>
+										{config.status ? "Active" : "Disabled"}
+									</span>
 								</td>
 								<td className="px-3 py-2">
 									<div className="flex justify-center gap-2">
 										<button
-											onClick={() => {
-												setSelectedDoctype({
-													doctypeid: doc.doctypeid,
-													doctypename: doc.doctypename,
-												})
-												openModal("editDoc")
-											}}
-											title="Edit Document Type"
+											onClick={() => openModal("editSysConfig")}
+											title="Edit System Config"
 											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
-										<button
-											title="Delete Document Type"
-											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
-											<Trash2 className="w-4 h-4 text-red-500 hover:text-[#112D4E]" />
+										<button className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
+											{config.status ? (
+												<ToggleRight className="w-5 h-5 text-green-500 hover:text-[#112D4E]" />
+											) : (
+												<ToggleLeft className="w-5 h-5 text-red-500 hover:text-[#112D4E]" />
+											)}
 										</button>
 									</div>
 								</td>
@@ -137,8 +146,8 @@ export default function DoctypeTable() {
 					</button>
 				</div>
 			</div>
-			<AddDoctypeModal />
-			<EditDoctypeModal />
+			<AddSysConfigModal />
+			<EditSysConfigModal />
 		</div>
 	)
 }

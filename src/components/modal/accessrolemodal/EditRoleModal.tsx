@@ -59,10 +59,10 @@ export default function EditRoleModal({
 		if (data) {
 			console.log("Role updated:", data)
 			onUpdate({
-				roleid: formData.roleid,
-				accessname: data.data.Name,
-				description: data.data.Description,
-				status: data.data.IsActive,
+				roleid: data.results.RoleID,
+				accessname: data.results.Name,
+				description: data.results.Description,
+				status: data.results.IsActive,
 			})
 			setFormData({
 				roleid: 0,

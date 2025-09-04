@@ -1,11 +1,11 @@
-export interface UploadResult {
+interface UploadResult {
 	file: string
 	size: number
 	valid: boolean
 	reason?: string
 }
 
-export interface UploadResponse {
+interface UploadResponse {
 	responseCode: number
 	message: string
 	results: UploadResult[]

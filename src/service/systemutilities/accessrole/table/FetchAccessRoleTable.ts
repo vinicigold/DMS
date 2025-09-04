@@ -6,12 +6,18 @@ interface ApiRole {
 	status: boolean
 }
 
-interface AccessRoleApiResponse {
+interface AccessRoleResults {
 	page: number
 	limit: number
 	total: number
 	totalpages: number
 	data: ApiRole[]
+}
+
+interface AccessRoleApiResponse {
+	responseCode: number
+	message: string
+	results: AccessRoleResults
 }
 
 export async function FetchAccessRoleTable(

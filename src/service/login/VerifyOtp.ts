@@ -26,6 +26,7 @@ export async function VerifyOtp(
 		}
 
 		const data: VerifyOtpResponse = await res.json()
+		console.log("display qr", data)
 
 		return data
 	} catch (error) {

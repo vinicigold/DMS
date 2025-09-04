@@ -6,12 +6,21 @@ interface EditRolePayload {
 }
 
 interface EditRoleResponse {
-	data: {
+	responseCode: number
+	message: string
+	results: {
+		RoleID: number
+		Code: string
 		Name: string
 		Description: string
 		IsActive: boolean
+		CreatedAt: string
+		CreatedByID: number
+		ModifiedAt: string
+		ModifiedByID: number
+		CreatedBy: string | null
+		ModifiedBy: string | null
 	}
-	message: string
 }
 
 export async function EditRole(

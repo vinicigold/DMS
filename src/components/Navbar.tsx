@@ -51,7 +51,7 @@ const navItems: NavItem[] = [
 			{
 				id: 33,
 				name: "System Configuration",
-				link: "/dms/apireferences/sysconfig",
+				link: "/dms/apireferences/systemconfig",
 			},
 		],
 	},

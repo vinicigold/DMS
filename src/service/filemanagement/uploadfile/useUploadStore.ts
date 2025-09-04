@@ -40,7 +40,6 @@ export const useUploadStore = create<UploadState>((set) => ({
 	uploadFile: async (fileToUpload) => {
 		const realFile = fileToUpload.file
 
-		// mark as uploading
 		set((state) => ({
 			files: state.files.map((f) =>
 				f.file.name === realFile.name && f.file.size === realFile.size

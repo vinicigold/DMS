@@ -28,11 +28,12 @@ export default function AccessRoleTable() {
 		async function loadRoles() {
 			const data = await FetchAccessRoleTable({ page })
 			if (data) {
-				setRoles(data.data)
-				setPage(data.page)
-				setLimit(data.limit)
-				setTotalPages(data.totalpages)
-				setTotal(data.total)
+				const results = data.results
+				setRoles(results.data)
+				setPage(results.page)
+				setLimit(results.limit)
+				setTotalPages(results.totalpages)
+				setTotal(results.total)
 			}
 		}
 		loadRoles()
