@@ -1,5 +1,6 @@
 "use client"
 import type React from "react"
+import { showSweetAlert } from "@/utilities/sweetAlert"
 import { useState, useRef } from "react"
 import { CircleCheck, QrCode } from "lucide-react"
 import Image from "next/image"
@@ -59,7 +60,14 @@ export default function TwoFactorQRModal({
 
 		const data = await VerifyRegisterOtp({ username, otp })
 		if (data) {
-			onSubmit(data.message)
+			showSweetAlert({
+				title: "Success!",
+				text: "2FA registered.",
+				icon: "success",
+				confirmText: "Continue",
+			}).then(() => {
+				onSubmit(data.message)
+			})
 			console.log("Register QR", data)
 		} else {
 			setError("Invalid OTP")

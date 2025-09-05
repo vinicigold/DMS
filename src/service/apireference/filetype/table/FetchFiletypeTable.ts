@@ -26,6 +26,7 @@ interface FiletypeStore {
 	setPage: (page: number) => void
 	setLimit: (limit: number) => void
 	fetchFiletypes: (page?: number, limit?: number) => Promise<void>
+	updateFiletypeStatus: (id: number, newStatus: boolean) => void
 }
 
 export const FetchFiletypeTable = create<FiletypeStore>((set, get) => ({
@@ -39,6 +40,13 @@ export const FetchFiletypeTable = create<FiletypeStore>((set, get) => ({
 
 	setPage: (page) => set({ page }),
 	setLimit: (limit) => set({ limit }),
+
+	updateFiletypeStatus: (id, newStatus) =>
+		set((state) => ({
+			data: state.data.map((file) =>
+				file.id === id ? { ...file, status: newStatus } : file
+			),
+		})),
 
 	fetchFiletypes: async (page?: number, limit?: number) => {
 		const token = localStorage.getItem("authToken")

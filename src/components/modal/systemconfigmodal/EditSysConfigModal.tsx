@@ -1,13 +1,33 @@
 "use client"
 import React from "react"
-import { X, UserRoundCog, Save } from "lucide-react"
+import { X, UserRoundCog, CirclePlus } from "lucide-react"
 import { useModalStore } from "@/service/modal/useModalStore"
 import { useSystemConfigStore } from "@/service/apireference/systemconfig/useSystemConfigStore"
 
 export default function EditSysConfigModal() {
-	const { editConfig } = useSystemConfigStore()
+	const { currentEditConfig, editConfig, loading } = useSystemConfigStore()
 	const { currentModal, closeModal } = useModalStore()
-	if (currentModal !== "editSysConfig") return null
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
+		if (!currentEditConfig) return
+		const formData = new FormData(e.currentTarget as HTMLFormElement)
+
+		await editConfig({
+			systemconfigid: currentEditConfig.systemconfigid,
+			appId: Number(formData.get("appId") ?? 0),
+			systemName: (formData.get("systemName") as string) || "",
+			ipAddress: (formData.get("ipAddress") as string) || "",
+			drive: (formData.get("drive") as string) || "",
+			path: (formData.get("path") as string) || "",
+			status: formData.get("status") === "true",
+		})
+
+		closeModal()
+	}
+
+	if (currentModal !== "editSysConfig" || !currentEditConfig) return null
+
 	return (
 		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-hidden overscroll-contain">
 			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto hide-scrollbar">
@@ -31,7 +51,7 @@ export default function EditSysConfigModal() {
 						<X className="w-4 h-4 text-gray-600" />
 					</button>
 				</div>
-				<form className="p-6">
+				<form onSubmit={handleSubmit} className="p-6">
 					<div className="space-y-4">
 						<div className="space-y-4">
 							<div>
@@ -44,9 +64,8 @@ export default function EditSysConfigModal() {
 									type="number"
 									id="appId"
 									name="appId"
-									defaultValue={modalData.appId}
 									readOnly
-									required
+									defaultValue={currentEditConfig.appId}
 									className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
 								/>
 							</div>
@@ -61,6 +80,7 @@ export default function EditSysConfigModal() {
 									id="systemName"
 									name="systemName"
 									required
+									defaultValue={currentEditConfig.systemName}
 									className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
 								/>
 							</div>
@@ -75,6 +95,7 @@ export default function EditSysConfigModal() {
 									id="ipAddress"
 									name="ipAddress"
 									required
+									defaultValue={currentEditConfig.ipAddress}
 									className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
 								/>
 							</div>
@@ -90,6 +111,7 @@ export default function EditSysConfigModal() {
 									maxLength={2}
 									name="drive"
 									required
+									defaultValue={currentEditConfig.drive}
 									className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
 								/>
 							</div>
@@ -104,6 +126,7 @@ export default function EditSysConfigModal() {
 									id="path"
 									name="path"
 									required
+									defaultValue={currentEditConfig.path}
 									className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
 								/>
 							</div>
@@ -116,11 +139,30 @@ export default function EditSysConfigModal() {
 								<select
 									id="status"
 									name="status"
+									defaultValue={currentEditConfig.status ? "true" : "false"}
 									className="w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200">
 									<option value="true">Active</option>
 									<option value="false">Inactive</option>
 								</select>
 							</div>
+						</div>
+						<div className="flex gap-4 mt-6">
+							<button
+								type="submit"
+								disabled={loading}
+								className="flex-1 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-6 py-3 rounded-xl hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+								{loading ? (
+									<>
+										<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+										Updating System Config...
+									</>
+								) : (
+									<>
+										<CirclePlus className="w-5 h-5" />
+										Update System Configuration
+									</>
+								)}
+							</button>
 						</div>
 					</div>
 				</form>

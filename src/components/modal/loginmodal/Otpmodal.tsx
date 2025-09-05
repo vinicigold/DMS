@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useRef, useEffect } from "react"
+import { showSweetAlert } from "@/utilities/sweetAlert"
 import { CircleCheck, RefreshCw, ShieldCheck } from "lucide-react"
 import { VerifyOtp } from "@/service/login/VerifyOtp"
 import { ResendTwoFA } from "@/service/login/ResendOtp"
@@ -107,7 +108,12 @@ export default function OtpModal({
 
 		const res = await ResendTwoFA({ username })
 		if (res?.message) {
-			alert(res.message)
+			showSweetAlert({
+				title: "Resend OTP.",
+				text: "Success!",
+				icon: "success",
+				confirmText: "Continue",
+			})
 		} else {
 			setError("Failed to resend 2FA. Try again.")
 		}

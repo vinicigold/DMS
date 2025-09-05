@@ -11,14 +11,22 @@ interface UploadResponse {
 	results: UploadResult[]
 }
 
-export async function UploadFileApi(file: File): Promise<UploadResponse> {
+export async function UploadFileApi(
+	file: File[],
+	doctypeId: string
+): Promise<UploadResponse> {
+	const token = localStorage.getItem("authToken")
 	const formData = new FormData()
-	formData.append("files", file)
+	file.forEach((file) => formData.append("files", file))
+	formData.append("doctypeid", doctypeId)
 
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 		const res = await fetch(`${API_BASE}/dms/file-upload/batch-upload`, {
 			method: "POST",
+			headers: {
+				Authorization: `${token}`,
+			},
 			body: formData,
 		})
 

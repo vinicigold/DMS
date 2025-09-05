@@ -2,8 +2,8 @@ import { create } from "zustand"
 
 interface EditFileTypePayload {
 	fileTypeId: number
-	mimeType: string
-	description: string
+	mimeType?: string
+	description?: string
 	status: boolean
 }
 

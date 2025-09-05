@@ -6,6 +6,7 @@ import { useModalStore } from "@/service/modal/useModalStore"
 import AddFiletypeModal from "@/components/modal/filetypemodal/AddFiletypeModal"
 import EditFiletypeModal from "@/components/modal/filetypemodal/EditFiletypeModal"
 import { useFileTypeStore } from "@/service/apireference/filetype/useFiletypeStore"
+import { EditFileType } from "@/service/apireference/filetype/EditFiletype"
 
 export default function FiletypeTabe() {
 	const { data, page, limit, total, totalPages, setPage, fetchFiletypes } =
@@ -23,9 +24,26 @@ export default function FiletypeTabe() {
 			: `${baseClasses} bg-red-100 text-red-800`
 	}
 
-	const handleToggleEnabled = (id: number, currentStatus: boolean) => {
-		console.log("Toggling filetype:", id, "new status:", !currentStatus)
-		// here you would call an API and then refresh with fetchFiletypes()
+	const handleToggleEnabled = (doc: {
+		id: number
+		mimeType: string
+		description: string
+		status: boolean
+	}) => {
+		const newStatus = !doc.status
+
+		FetchFiletypeTable.getState().updateFiletypeStatus(doc.id, newStatus)
+
+		EditFileType.getState()
+			.editFileType({
+				fileTypeId: doc.id,
+				mimeType: doc.mimeType,
+				description: doc.description,
+				status: newStatus,
+			})
+			.catch(() => {
+				FetchFiletypeTable.getState().updateFiletypeStatus(doc.id, doc.status)
+			})
 	}
 
 	return (
@@ -72,14 +90,14 @@ export default function FiletypeTabe() {
 						</tr>
 					</thead>
 					<tbody>
-						{data.map((doc) => (
-							<tr key={doc.id} className="border-b hover:bg-gray-50">
-								<td className="px-3 py-2">{doc.id}</td>
-								<td className="px-3 py-2">{doc.mimeType}</td>
-								<td className="px-3 py-2">{doc.description}</td>
+						{data.map((file) => (
+							<tr key={file.id} className="border-b hover:bg-gray-50">
+								<td className="px-3 py-2">{file.id}</td>
+								<td className="px-3 py-2">{file.mimeType}</td>
+								<td className="px-3 py-2">{file.description}</td>
 								<td className="px-3 py-2">
-									<span className={getStatusBadge(doc.status)}>
-										{doc.status ? "Active" : "Disabled"}
+									<span className={getStatusBadge(file.status)}>
+										{file.status ? "Active" : "Disabled"}
 									</span>
 								</td>
 								<td className="px-3 py-2">
@@ -87,10 +105,10 @@ export default function FiletypeTabe() {
 										<button
 											onClick={() => {
 												setSelectedFileType({
-													id: doc.id,
-													mimeType: doc.mimeType,
-													description: doc.description,
-													status: doc.status,
+													id: file.id,
+													mimeType: file.mimeType,
+													description: file.description,
+													status: file.status,
 												})
 												openModal("editFile")
 											}}
@@ -99,12 +117,12 @@ export default function FiletypeTabe() {
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
 										<button
-											onClick={() => handleToggleEnabled(doc.id, doc.status)}
+											onClick={() => handleToggleEnabled(file)}
 											title={
-												doc.status ? "Disable File Type" : "Activate File Type"
+												file.status ? "Disable File Type" : "Activate File Type"
 											}
 											className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none">
-											{doc.status ? (
+											{file.status ? (
 												<ToggleRight className="h-6 w-6 text-green-400 hover:text-green-600" />
 											) : (
 												<ToggleLeft className="h-6 w-6 text-red-400 hover:text-red-600" />

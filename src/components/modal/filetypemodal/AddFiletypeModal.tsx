@@ -46,6 +46,14 @@ export default function AddFiletypeModal() {
 		closeModal()
 	}
 
+	const handleClose = () => {
+		// Reset states
+		setMime("")
+		setFileName("")
+		// Close the modal
+		closeModal()
+	}
+
 	if (currentModal !== "addFile") return null
 	return (
 		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-hidden overscroll-contain">
@@ -63,7 +71,7 @@ export default function AddFiletypeModal() {
 						</div>
 					</div>
 					<button
-						onClick={closeModal}
+						onClick={handleClose}
 						className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
 						<X className="w-4 h-4 text-gray-600" />
 					</button>

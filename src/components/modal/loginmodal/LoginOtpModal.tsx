@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useRef } from "react"
+import { showSweetAlert } from "@/utilities/sweetAlert"
 import { CircleCheck, RefreshCw, ShieldCheck, X } from "lucide-react"
 import { LoginTwoFA } from "@/service/login/LoginTwoFA"
 import { ResetTwoFA } from "@/service/login/ResetTwoFA"
@@ -73,7 +74,14 @@ export default function LoginOtpModal({
 		const data = await LoginTwoFA({ username, otp })
 
 		if (data) {
-			onSubmit(otp)
+			showSweetAlert({
+				title: "2FA verified!",
+				text: "Success!.",
+				icon: "success",
+				confirmText: "Continue",
+			}).then(() => {
+				onSubmit(otp)
+			})
 			console.log("HELLO TESTING", data)
 		} else {
 			setError("Invalid OTP")
@@ -86,8 +94,14 @@ export default function LoginOtpModal({
 		setIsLoading(true)
 		const res = await ResetTwoFA({ username })
 		if (res?.message) {
-			alert(res.message)
-			onClose()
+			showSweetAlert({
+				title: "Reset 2FA.",
+				text: "Success!",
+				icon: "success",
+				confirmText: "Continue",
+			}).then(() => {
+				onClose()
+			})
 		} else {
 			setError("Failed to reset 2FA. Try again.")
 		}

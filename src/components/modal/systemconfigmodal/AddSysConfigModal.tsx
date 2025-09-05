@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from "react"
-import { File, X, CirclePlus } from "lucide-react"
+import { Server, X, CirclePlus } from "lucide-react"
 import { useModalStore } from "@/service/modal/useModalStore"
 import { useSystemConfigStore } from "@/service/apireference/systemconfig/useSystemConfigStore"
 
@@ -46,7 +46,7 @@ export default function AddSysConfigModal() {
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
-							<File className="w-5 h-5 text-white" />
+							<Server className="w-5 h-5 text-white" />
 						</div>
 						<div>
 							<h3 className="text-xl font-bold text-[#112D4E]">

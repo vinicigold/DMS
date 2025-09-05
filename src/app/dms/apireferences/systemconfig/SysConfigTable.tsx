@@ -17,6 +17,7 @@ export default function SysConfigTable() {
 		setPage,
 		setLimit,
 		fetchConfigs,
+		setCurrentEditConfig,
 	} = useSystemConfigStore()
 
 	const getStatusBadge = (status: boolean) => {
@@ -85,7 +86,10 @@ export default function SysConfigTable() {
 								<td className="px-3 py-2">
 									<div className="flex justify-center gap-2">
 										<button
-											onClick={() => openModal("editSysConfig")}
+											onClick={() => {
+												setCurrentEditConfig(config)
+												openModal("editSysConfig")
+											}}
 											title="Edit System Config"
 											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
