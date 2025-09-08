@@ -1,6 +1,7 @@
 interface UserProfileResponse {
 	name: string
 	role: string
+	permissions: string[]
 }
 
 export async function UserProfile(): Promise<UserProfileResponse | null> {
@@ -27,6 +28,7 @@ export async function UserProfile(): Promise<UserProfileResponse | null> {
 		const userProfile: UserProfileResponse = {
 			name: data.name,
 			role: data.role,
+			permissions: Array.isArray(data.permissions) ? data.permissions : [],
 		}
 
 		return userProfile

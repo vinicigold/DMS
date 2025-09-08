@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 interface UserProfileResponse {
 	name: string
 	role: string
+	permissions: string[]
 }
 
 interface NavItem {
@@ -23,6 +24,7 @@ interface NavItem {
 	name: string
 	link?: string
 	icon?: React.ElementType
+	permission?: string
 	Children?: NavItem[]
 }
 
@@ -42,6 +44,7 @@ const navItems: NavItem[] = [
 				id: 31,
 				name: "Document Type",
 				link: "/dms/apireferences/doctype",
+				permission: "documentType:view-dt",
 			},
 			{
 				id: 32,
@@ -76,6 +79,7 @@ const navItems: NavItem[] = [
 				id: 51,
 				name: "Access Matrix",
 				link: "/dms/systemutilities/accessmatrix",
+				permission: "accessMatrix:view-access-list",
 			},
 			{
 				id: 52,
@@ -86,6 +90,7 @@ const navItems: NavItem[] = [
 				id: 53,
 				name: "Access Role",
 				link: "/dms/systemutilities/accessrole",
+				permission: "accessRole:view-role",
 			},
 			{
 				id: 54,
@@ -101,6 +106,7 @@ const navItems: NavItem[] = [
 				id: 56,
 				name: "User Accounts",
 				link: "/dms/systemutilities/useraccount",
+				permission: "userAccount:read",
 			},
 		],
 	},
@@ -158,9 +164,21 @@ export default function Nav() {
 		const fetchUser = async () => {
 			const profile = await UserProfile()
 			setUser(profile)
+
+			// initialize collapsibles for items that have children
+			const collapsibles: Record<number, boolean> = {}
+			navItems.forEach((item) => {
+				if (item.Children) collapsibles[item.id] = false
+			})
+			setOpenCollapsibles(collapsibles)
 		}
 		fetchUser()
 	}, [])
+
+	const hasPermission = (permission?: string) => {
+		if (!permission) return true // if no permission is required, show
+		return user?.permissions.includes(permission) ?? false
+	}
 
 	const handleLogout = async () => {
 		router.push("/")
@@ -171,47 +189,51 @@ export default function Nav() {
 			<nav
 				className="flex flex-1 flex-col gap-1 text-sm font-semibold overflow-auto p-1
 			 hide-scrollbar">
-				{navItems.map((item) => (
-					<div key={item.id}>
-						{item.Children ? (
-							<div className="group/collapsible">
-								<button
-									type="button"
-									className="flex w-full items-center justify-start gap-2 h-8 px-1 rounded-md hover:bg-blue-50"
-									onClick={() => toggleCollapsible(item.id)}>
-									{item.icon && <item.icon className="size-4" />}
-									<span>{item.name}</span>
-									<ChevronDown
-										className={`ml-auto size-4 transition-transform ${
-											openCollapsibles[item.id] ? "rotate-180" : ""
-										}`}
-									/>
-								</button>
-
-								{openCollapsibles[item.id] && (
-									<ul className="mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 font-semibold border-l border-gray-200 px-2.5 py-0.5">
-										{item.Children.map((subItem) => (
-											<li key={subItem.id}>
-												<Link
-													href={subItem.link || "#"}
-													className="flex h-7 min-w-0 items-center gap-2 overflow-hidden rounded-md px-2 text-xs text-gray-700 hover:bg-blue-50">
-													<span>{subItem.name}</span>
-												</Link>
-											</li>
-										))}
-									</ul>
+				{navItems.map(
+					(item) =>
+						hasPermission(item.permission) && (
+							<div key={item.id}>
+								{item.Children ? (
+									<div className="group/collapsible">
+										<button
+											type="button"
+											className="flex w-full items-center justify-start gap-2 h-8 px-1 rounded-md hover:bg-blue-50"
+											onClick={() => toggleCollapsible(item.id)}>
+											{item.icon && <item.icon className="size-4" />}
+											<span>{item.name}</span>
+											<ChevronDown
+												className={`ml-auto size-4 transition-transform ${
+													openCollapsibles[item.id] ? "rotate-180" : ""
+												}`}
+											/>
+										</button>
+										{openCollapsibles[item.id] && (
+											<ul className="mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 font-semibold border-l border-gray-200 px-2.5 py-0.5">
+												{item.Children.filter((sub) =>
+													hasPermission(sub.permission)
+												).map((subItem) => (
+													<li key={subItem.id}>
+														<Link
+															href={subItem.link || "#"}
+															className="flex h-7 min-w-0 items-center gap-2 overflow-hidden rounded-md px-2 text-xs text-gray-700 hover:bg-blue-50">
+															<span>{subItem.name}</span>
+														</Link>
+													</li>
+												))}
+											</ul>
+										)}
+									</div>
+								) : (
+									<Link
+										href={item.link || "#"}
+										className="flex w-full items-center justify-start gap-2 h-8 px-1 rounded-md hover:bg-blue-50">
+										{item.icon && <item.icon className="size-4" />}
+										<span>{item.name}</span>
+									</Link>
 								)}
 							</div>
-						) : (
-							<Link
-								href={item.link || "#"}
-								className="flex w-full items-center justify-start gap-2 h-8 px-1 rounded-md hover:bg-blue-50">
-								{item.icon && <item.icon className="size-4" />}
-								<span>{item.name}</span>
-							</Link>
-						)}
-					</div>
-				))}
+						)
+				)}
 			</nav>
 
 			<div className="mt-auto border-t p-1 relative">

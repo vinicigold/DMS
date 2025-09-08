@@ -22,6 +22,7 @@ interface SystemConfigState {
 	fetchConfigs: (page?: number, limit?: number) => Promise<void>
 	addConfig: (payload: Omit<SystemConfig, "systemconfigid">) => Promise<void>
 	editConfig: (payload: EditSystemConfigPayload) => Promise<void>
+	toggleConfigStatus: (systemconfigid: number) => Promise<void>
 	setPage: (page: number) => void
 	setLimit: (limit: number) => void
 }
@@ -91,6 +92,35 @@ export const useSystemConfigStore = create<SystemConfigState>((set, get) => ({
 				loading: false,
 				error:
 					error instanceof Error ? error.message : "Failed to update config",
+			})
+		}
+	},
+
+	toggleConfigStatus: async (systemconfigid: number) => {
+		const config = get().configs.find(
+			(c) => c.systemconfigid === systemconfigid
+		)
+		if (!config) return
+
+		const updatedPayload: EditSystemConfigPayload = {
+			...config,
+			status: !config.status, // toggle status
+		}
+
+		set({ loading: true, error: null })
+		try {
+			const res = await editSystemConfig(updatedPayload)
+			set((state) => ({
+				configs: state.configs.map((c) =>
+					c.systemconfigid === systemconfigid ? res.results : c
+				),
+				loading: false,
+			}))
+		} catch (error) {
+			set({
+				loading: false,
+				error:
+					error instanceof Error ? error.message : "Failed to toggle status",
 			})
 		}
 	},

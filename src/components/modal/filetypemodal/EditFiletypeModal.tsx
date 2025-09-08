@@ -40,9 +40,9 @@ export default function EditFiletypeModal() {
 			status: boolean
 		} = {
 			fileTypeId: selectedFileType.id,
-			mimeType: mimeType, // from local state updated by file upload
-			description: description, // from form input
-			status: selectedFileType.status, // keep existing status or add toggle
+			mimeType: mimeType,
+			description: description,
+			status: selectedFileType.status,
 		}
 
 		await editFileType(payload)

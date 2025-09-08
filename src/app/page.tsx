@@ -65,18 +65,18 @@ export default function Login() {
 	return (
 		<div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] relative overflow-hidden">
 			<div
-				className={`w-full max-w-md bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 z-10 transition-all duration-500
+				className={`w-full max-w-sm bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 z-10 transition-all duration-500
       			${
 							showStaffIdModal || showOtpModal || showNewPassModal
 								? "blur-sm scale-[0.98] opacity-80"
 								: "hover:shadow-3xl"
 						}`}>
 				<form onSubmit={handleSubmit} className="w-full">
-					<div className="text-center mb-8">
-						<div className="w-20 h-20 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-							<Building2 className="w-10 h-10 text-white" />
+					<div className="text-center mb-6">
+						<div className="w-16 h-16 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+							<Building2 className="w-8 h-8 text-white" />
 						</div>
-						<h2 className="text-3xl font-bold text-[#112D4E] mb-2">
+						<h2 className="text-xl font-bold text-[#112D4E] mb-2">
 							Document Management System
 						</h2>
 						<p className="text-[#64748b] text-sm">V1.0.0</p>
@@ -91,11 +91,11 @@ export default function Login() {
 					<div className="mb-4">
 						<label
 							htmlFor="username"
-							className="block text-[#112D4E] font-semibold mb-2 text-sm">
+							className="block text-[#112D4E] font-semibold mb-2 text-xs">
 							Username
 						</label>
 						<div className="relative">
-							<User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-5 h-5" />
+							<User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-4 h-4" />
 							<input
 								type="text"
 								id="username"
@@ -104,19 +104,19 @@ export default function Login() {
 								onChange={handleChange}
 								placeholder="Enter your username"
 								required
-								className="w-full pl-12 pr-4 py-4 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E]
-                  bg-white transition-all duration-200 hover:border-[#cbd5e1]"
+								className="w-full pl-10 pr-3 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E]
+                  				bg-white transition-all duration-200 hover:border-[#cbd5e1]"
 							/>
 						</div>
 					</div>
 					<div className="mb-4">
 						<label
 							htmlFor="password"
-							className="block text-[#112D4E] font-semibold mb-2 text-sm">
+							className="block text-[#112D4E] font-semibold mb-2 text-xs">
 							Password
 						</label>
 						<div className="relative">
-							<Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-5 h-5" />
+							<Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-4 h-4" />
 							<input
 								type={showPassword ? "text" : "password"}
 								id="password"
@@ -125,17 +125,17 @@ export default function Login() {
 								onChange={handleChange}
 								placeholder="Enter your password"
 								required
-								className="w-full pl-12 pr-4 py-4 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E]
-                  bg-white transition-all duration-200 hover:border-[#cbd5e1]"
+								className="w-full pl-10 pr-3 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E]
+                  				bg-white transition-all duration-200 hover:border-[#cbd5e1]"
 							/>
 							<button
 								type="button"
 								onClick={() => setShowPassword(!showPassword)}
 								className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#64748b]">
 								{showPassword ? (
-									<Eye className="w-5 h-5" />
+									<Eye className="w-4 h-4" />
 								) : (
-									<EyeOff className="w-5 h-5" />
+									<EyeOff className="w-4 h-4" />
 								)}
 							</button>
 						</div>
@@ -143,8 +143,8 @@ export default function Login() {
 					<button
 						type="submit"
 						disabled={isLoading}
-						className="w-full bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white font-semibold py-4 rounded-xl hover:from-[#163b65] hover:to-[#4a7bc8] transition-all 
-            duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
+						className="w-full bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white font-semibold py-3 rounded-xl hover:from-[#163b65] hover:to-[#4a7bc8] transition-all
+            			duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
 						{isLoading ? (
 							<>
 								<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -157,11 +157,11 @@ export default function Login() {
 							</>
 						)}
 					</button>
-					<div className="text-center mt-6">
+					<div className="text-center mt-4">
 						<button
 							type="button"
 							onClick={() => setShowStaffIdModal(true)}
-							className="text-[#3F72AF] hover:text-[#112D4E] text-sm font-medium hover:underline transition-colors">
+							className="text-[#6a83a1] hover:text-[#112D4E] text-sm font-medium hover:underline transition-colors">
 							Forgot your password?
 						</button>
 					</div>

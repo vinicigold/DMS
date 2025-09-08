@@ -1,6 +1,7 @@
 "use client"
 
 import { useAccessMatrixStore } from "@/service/systemutilities/accessmatrix/useAccessMatrixStore"
+import { UserCog, ToggleLeft, ToggleRight, Info } from "lucide-react"
 
 export default function PermissionAccessMatrix() {
 	const { selectedRole, permissions, updatePermission } = useAccessMatrixStore()
@@ -11,25 +12,42 @@ export default function PermissionAccessMatrix() {
 		}
 	}
 	return (
-		<div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+		<div className="sticky top-6 bg-white p-8 rounded-lg shadow-md border border-gray-200 max-h-[calc(100vh-3rem)] overflow-y-auto">
 			{selectedRole ? (
 				<div>
-					<h2 className="text-lg font-semibold text-gray-700 mb-4">
-						Permissions for {selectedRole.accessname}
+					<h2 className="text-md font-semibold text-gray-700 mb-4">
+						Permissions for {selectedRole.name}
 					</h2>
+
 					{permissions?.menus.map((menu) => (
 						<div key={menu.menuId} className="mb-6">
-							<h3 className="text-md font-bold text-gray-800 mb-2">
+							<h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center relative group">
+								<span className="inline-block mr-1">
+									<Info className="h-5 w-4 text-black" />
+								</span>
 								{menu.menuName}
+								<span className="absolute left-6 bottom-full mb-1 w-max max-w-xs rounded bg-gray-800 text-white text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+									{menu.menuDescription}
+								</span>
 							</h3>
 							<ul className="space-y-2">
 								{menu.permissions.map((perm) => (
 									<li
 										key={perm.permissionId}
 										className="flex items-center justify-between">
-										<span className="text-gray-700">{perm.action}</span>
-										<label className="relative inline-flex items-center cursor-pointer">
+										<span className="text-gray-700 text-sm flex items-center relative group">
+											<span className="inline-block mr-1 text-blue-400 h-5 w-4">
+												<Info className="h-5 w-4" />
+											</span>
+											{perm.action}
+											<span className="absolute left-6 bottom-full mb-1 w-max max-w-xs rounded bg-gray-800 text-white text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+												{perm.description}
+											</span>
+										</span>
+
+										<div className="relative inline-flex items-center cursor-pointer">
 											<input
+												id={`perm-${perm.permissionId}`}
 												type="checkbox"
 												checked={perm.granted}
 												onChange={(e) =>
@@ -40,8 +58,28 @@ export default function PermissionAccessMatrix() {
 												}
 												className="sr-only peer"
 											/>
-											<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-										</label>
+											<button
+												onClick={() =>
+													selectedRole &&
+													updatePermission(
+														selectedRole.roleid,
+														perm.permissionId,
+														!perm.granted
+													)
+												}
+												title={
+													perm.granted
+														? "Disable Permission"
+														: "Enable Permission"
+												}
+												className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none">
+												{perm.granted ? (
+													<ToggleRight className="h-6 w-6 text-green-400 hover:text-green-600" />
+												) : (
+													<ToggleLeft className="h-6 w-6 text-red-400 hover:text-red-600" />
+												)}
+											</button>
+										</div>
 									</li>
 								))}
 							</ul>
@@ -50,6 +88,7 @@ export default function PermissionAccessMatrix() {
 				</div>
 			) : (
 				<p className="text-gray-500 text-center py-10">
+					<UserCog className="w-16 h-16 text-gray-300 mx-auto mb-4" />
 					Please select a role to view permissions.
 				</p>
 			)}

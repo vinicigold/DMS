@@ -22,7 +22,7 @@ export async function UploadFileApi(
 
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const res = await fetch(`${API_BASE}/dms/file-upload/batch-upload`, {
+		const res = await fetch(`${API_BASE}/dms/api/web-upload`, {
 			method: "POST",
 			headers: {
 				Authorization: `${token}`,

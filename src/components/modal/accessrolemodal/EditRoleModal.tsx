@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react"
+import { useModalStore } from "@/service/modal/useModalStore"
 import { X, UserRoundCog, Save } from "lucide-react"
 import { EditRole } from "@/service/systemutilities/accessrole/EditRole"
 
@@ -24,6 +25,7 @@ export default function EditRoleModal({
 	onUpdate,
 }: EditRoleModalProps) {
 	const [isLoading, setIsLoading] = useState(false)
+	const { currentModal, closeModal } = useModalStore()
 	const [formData, setFormData] = useState<Role>({
 		roleid: 0,
 		accessname: "",
@@ -78,7 +80,7 @@ export default function EditRoleModal({
 		setIsLoading(false)
 	}
 
-	if (!isOpen) return null
+	if (currentModal !== "editRole") return null
 
 	return (
 		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">

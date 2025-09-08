@@ -2,6 +2,7 @@
 import React, { useEffect } from "react"
 import { SquarePen, ToggleLeft, ToggleRight, CirclePlus } from "lucide-react"
 import { useModalStore } from "@/service/modal/useModalStore"
+import { SystemConfig } from "@/service/apireference/systemconfig/SystemConfigApi"
 import { useSystemConfigStore } from "@/service/apireference/systemconfig/useSystemConfigStore"
 import AddSysConfigModal from "@/components/modal/systemconfigmodal/AddSysConfigModal"
 import EditSysConfigModal from "@/components/modal/systemconfigmodal/EditSysConfigModal"
@@ -18,6 +19,7 @@ export default function SysConfigTable() {
 		setLimit,
 		fetchConfigs,
 		setCurrentEditConfig,
+		toggleConfigStatus,
 	} = useSystemConfigStore()
 
 	const getStatusBadge = (status: boolean) => {
@@ -25,6 +27,10 @@ export default function SysConfigTable() {
 		return status
 			? `${baseClasses} bg-green-100 text-green-800`
 			: `${baseClasses} bg-red-100 text-red-800`
+	}
+
+	const handleToggleEnabled = (config: SystemConfig) => {
+		toggleConfigStatus(config.systemconfigid)
 	}
 
 	useEffect(() => {
@@ -94,11 +100,18 @@ export default function SysConfigTable() {
 											className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
 											<SquarePen className="w-4 h-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
-										<button className="hover:bg-[#CCE3FF] p-1 rounded transition-all duration-200">
+										<button
+											onClick={() => handleToggleEnabled(config)}
+											title={
+												config.status
+													? "Disable File Type"
+													: "Activate File Type"
+											}
+											className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none">
 											{config.status ? (
-												<ToggleRight className="w-5 h-5 text-green-500 hover:text-[#112D4E]" />
+												<ToggleRight className="h-6 w-6 text-green-400 hover:text-green-600" />
 											) : (
-												<ToggleLeft className="w-5 h-5 text-red-500 hover:text-[#112D4E]" />
+												<ToggleLeft className="h-6 w-6 text-red-400 hover:text-red-600" />
 											)}
 										</button>
 									</div>

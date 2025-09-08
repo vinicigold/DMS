@@ -18,15 +18,53 @@ interface UploadState {
 	uploadAllFiles: (doctypeId: string) => Promise<void>
 }
 
+function markFileAs(
+	files: FileWithValid[],
+	file: File,
+	updates: Partial<FileWithValid>
+): FileWithValid[] {
+	return files.map((f) =>
+		f.file.name === file.name && f.file.size === file.size
+			? { ...f, ...updates }
+			: f
+	)
+}
+
+function mapUploadResults(
+	files: FileWithValid[],
+	results: { file: string; size: number; valid: boolean; reason?: string }[]
+): FileWithValid[] {
+	return files.map((f) => {
+		const result = results.find(
+			(r) => r.file === f.file.name && r.size === f.file.size
+		)
+		if (!result) return f
+
+		return result.valid
+			? { ...f, status: "success", progress: 100, valid: true }
+			: {
+					...f,
+					status: "error",
+					progress: 100,
+					valid: false,
+					reason: result.reason || "Unknown error",
+			  }
+	})
+}
+
 export const useUploadStore = create<UploadState>((set, get) => ({
 	files: [],
 
 	addFiles: (selected) => {
-		const newFiles: FileWithValid[] = Array.from(selected).map((file) => ({
-			file,
-			status: "pending",
-			progress: 0,
-		}))
+		const newFiles: FileWithValid[] = Array.from(selected)
+			.filter(
+				(file) =>
+					!get().files.some(
+						(f) => f.file.name === file.name && f.file.size === file.size
+					)
+			)
+			.map((file) => ({ file, status: "pending", progress: 0 }))
+
 		set((state) => ({ files: [...state.files, ...newFiles] }))
 	},
 
@@ -38,95 +76,50 @@ export const useUploadStore = create<UploadState>((set, get) => ({
 
 	resetFiles: () => set({ files: [] }),
 
-	uploadFile: async (fileToUpload, doctypeId: string) => {
+	uploadFile: async (fileToUpload, doctypeId) => {
 		const realFile = fileToUpload.file
-
 		set((state) => ({
-			files: state.files.map((f) =>
-				f.file.name === realFile.name && f.file.size === realFile.size
-					? { ...f, status: "uploading", progress: 0 }
-					: f
-			),
+			files: markFileAs(state.files, realFile, {
+				status: "uploading",
+				progress: 0,
+			}),
+			error: null,
 		}))
 
 		try {
 			const response = await UploadFileApi([realFile], doctypeId)
-
-			const fileResult = response.results.find(
-				(r) => r.file === realFile.name && r.size === realFile.size
-			)
-
-			if (fileResult?.valid) {
-				set((state) => ({
-					files: state.files.map((f) =>
-						f.file.name === realFile.name && f.file.size === realFile.size
-							? { ...f, status: "success", progress: 100, valid: true }
-							: f
-					),
-				}))
-			} else {
-				set((state) => ({
-					files: state.files.map((f) =>
-						f.file.name === realFile.name && f.file.size === realFile.size
-							? {
-									...f,
-									status: "error",
-									progress: 100,
-									valid: false,
-									reason: fileResult?.reason || "Unknown error",
-							  }
-							: f
-					),
-				}))
-			}
+			const updated = mapUploadResults(get().files, response.results)
+			set({ files: updated })
 		} catch (error) {
 			set((state) => ({
-				files: state.files.map((f) =>
-					f.file.name === realFile.name && f.file.size === realFile.size
-						? {
-								...f,
-								status: "error",
-								progress: 100,
-								valid: false,
-								reason: "Upload failed",
-						  }
-						: f
-				),
+				files: markFileAs(state.files, realFile, {
+					status: "error",
+					progress: 100,
+					valid: false,
+					reason: "Upload failed",
+				}),
+				error: error instanceof Error ? error.message : String(error),
 			}))
 			throw error
 		}
 	},
-	uploadAllFiles: async (doctypeId: string) => {
-		const filesToUpload = get().files.filter((f) => f.status === "pending")
+	uploadAllFiles: async (doctypeId) => {
+		const pending = get().files.filter((f) => f.status === "pending")
 
-		set({
-			files: get().files.map((f) =>
+		set((state) => ({
+			files: state.files.map((f) =>
 				f.status === "pending" ? { ...f, status: "uploading", progress: 0 } : f
 			),
-		})
+			error: null,
+		}))
 
 		try {
 			const response = await UploadFileApi(
-				filesToUpload.map((f) => f.file),
+				pending.map((f) => f.file),
 				doctypeId
 			)
-
 			set((state) => ({
-				files: state.files.map((f) => {
-					const result = response.results.find(
-						(r) => r.file === f.file.name && r.size === f.file.size
-					)
-					if (!result) return f
-					return result.valid
-						? { ...f, status: "success", progress: 100, valid: true }
-						: {
-								...f,
-								status: "error",
-								progress: 100,
-								valid: false,
-								reason: result.reason || "Unknown error",
-						  }
-				}),
+				files: mapUploadResults(state.files, response.results),
 			}))
 		} catch (error) {
 			set((state) => ({
@@ -141,6 +134,7 @@ export const useUploadStore = create<UploadState>((set, get) => ({
 						  }
 						: f
 				),
+				error: error instanceof Error ? error.message : String(error),
 			}))
 			throw error
 		}

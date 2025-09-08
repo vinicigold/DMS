@@ -1,40 +1,82 @@
-// accessMatrixApi.ts
+export interface Role {
+	roleid: number
+	code: string
+	name: string
+	description: string
+	status: boolean
+	usercount?: number
+}
+
 export interface Permission {
 	permissionId: number
 	action: string
+	description: string
 	granted: boolean
 }
 
 export interface Menu {
 	menuId: number
 	menuName: string
+	menuDescription: string
 	permissions: Permission[]
 }
 
-export interface Role {
+export interface RolePermissions {
 	roleId: number
 	roleName: string
-	description?: string
 	menus: Menu[]
 }
 
-export async function fetchRoles(): Promise<Role[]> {
-	const res = await fetch("/api/accessmatrix") // replace with your endpoint
-	if (!res.ok) throw new Error("Failed to fetch roles")
-	const data = await res.json()
-	return data
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
+
+export async function getRoles(): Promise<Role[]> {
+	const token = localStorage.getItem("authToken")
+	const response = await fetch(`${API_BASE}/dms/access-role/get-role`, {
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `${token}`,
+		},
+		credentials: "include",
+	})
+
+	if (!response.ok) throw new Error("Failed to fetch roles.")
+	const data = await response.json()
+	return data.results.data
 }
 
-export async function updatePermission(
+export async function getRolePermissions(
+	roleId: number
+): Promise<RolePermissions> {
+	const token = localStorage.getItem("authToken")
+	const response = await fetch(
+		`${API_BASE}/dms/access-matrix/roles/${roleId}`,
+		{
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `${token}`,
+			},
+			credentials: "include",
+		}
+	)
+
+	if (!response.ok) throw new Error("Failed to fetch permissions.")
+	return response.json()
+}
+
+export async function updateRolePermission(
 	roleId: number,
 	permissionId: number,
 	granted: boolean
-): Promise<Role> {
-	const res = await fetch(`/api/accessmatrix/${roleId}/permission`, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ permissionId, granted }),
+): Promise<void> {
+	const token = localStorage.getItem("authToken")
+	const response = await fetch(`${API_BASE}/dms/access-matrix/update-access`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `${token}`,
+		},
+		body: JSON.stringify({ roleId, permissionId, grant: granted }),
+		credentials: "include",
 	})
-	if (!res.ok) throw new Error("Failed to update permission")
-	return res.json()
+	if (!response.ok) throw new Error("Failed to update permission.")
 }
