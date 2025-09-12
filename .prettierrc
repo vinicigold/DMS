@@ -4,5 +4,6 @@
 	"useTabs": true,
 	"semi": false,
 	"bracketSameLine": true,
-	"objectWrap": "collapse"
+	"objectWrap": "collapse",
+	"plugins": ["prettier-plugin-tailwindcss"]
 }

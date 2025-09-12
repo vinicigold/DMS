@@ -1,40 +1,40 @@
 "use client"
 import React from "react"
-import { X, UserRoundCog, CirclePlus } from "lucide-react"
+import { Box, X, CirclePlus } from "lucide-react"
 import { useModalStore } from "@/service/modal/useModalStore"
-import { useSystemConfigStore } from "@/service/apireference/systemconfig/useSystemConfigStore"
+import { useAccessObjectStore } from "@/service/systemutilities/accessobject/useAccessObjectStore"
 
-export default function EditSysConfigModal() {
-	const { currentEditConfig, editConfig, loading } = useSystemConfigStore()
+export default function EditAccessObjectModal() {
 	const { currentModal, closeModal } = useModalStore()
+	const { currentEditObj, editAccObj, loading } = useAccessObjectStore()
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		if (!currentEditConfig) return
+		if (!currentEditObj) return
 		const formData = new FormData(e.currentTarget as HTMLFormElement)
 
-		await editConfig({
-			systemconfigid: currentEditConfig.systemconfigid,
-			appId: Number(formData.get("appId") ?? 0),
-			systemName: (formData.get("systemName") as string) || "",
-			ipAddress: (formData.get("ipAddress") as string) || "",
-			drive: (formData.get("drive") as string) || "",
-			path: (formData.get("path") as string) || "",
+		await editAccObj({
+			accessObjectId: currentEditObj.accessObjectId,
+			parentId: formData.get("parentId")
+				? Number(formData.get("parentId"))
+				: null,
+			parentName: (formData.get("parentName") as string) || "",
+			objectType: (formData.get("objectType") as string) || "",
+			objectName: (formData.get("objectName") as string) || "",
+			objectDescription: (formData.get("objectDescription") as string) || "",
 			status: formData.get("status") === "true",
 		})
 
 		closeModal()
 	}
-
-	if (currentModal !== "editSysConfig" || !currentEditConfig) return null
-
+	if (currentModal !== "editAccessObj" || !currentEditObj) return null
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden overscroll-contain bg-black/50 p-4 backdrop-blur-sm">
 			<div className="hide-scrollbar max-h-[90vh] w-full max-w-lg scale-100 transform overflow-y-auto rounded-3xl bg-white shadow-2xl transition-all duration-300">
 				<div className="flex items-center justify-between border-b border-gray-100 p-6">
 					<div className="flex items-center gap-3">
 						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#112D4E] to-[#3F72AF]">
-							<UserRoundCog className="h-5 w-5 text-white" />
+							<Box className="h-5 w-5 text-white" />
 						</div>
 						<div>
 							<h3 className="text-xl font-bold text-[#112D4E]">
@@ -56,78 +56,93 @@ export default function EditSysConfigModal() {
 						<div className="space-y-4">
 							<div>
 								<label
-									htmlFor="appId"
+									htmlFor="accessObjectId"
 									className="mb-2 block text-sm font-semibold text-[#112D4E]">
-									Application ID *
+									Access Object ID *
 								</label>
 								<input
 									type="number"
-									id="appId"
-									name="appId"
+									id="accessObjectId"
+									name="accessObjectId"
 									readOnly
-									defaultValue={currentEditConfig.appId}
-									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
+									defaultValue={currentEditObj.accessObjectId}
+									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 								/>
 							</div>
 							<div>
 								<label
-									htmlFor="systemName"
+									htmlFor="parentId"
 									className="mb-2 block text-sm font-semibold text-[#112D4E]">
-									System Name *
+									Parent ID *
 								</label>
 								<input
 									type="text"
-									id="systemName"
-									name="systemName"
+									id="parentId"
+									name="parentId"
 									required
-									defaultValue={currentEditConfig.systemName}
-									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
+									readOnly
+									defaultValue={currentEditObj.parentId ?? ""}
+									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 								/>
 							</div>
 							<div>
 								<label
-									htmlFor="ipAddress"
+									htmlFor="parentName"
 									className="mb-2 block text-sm font-semibold text-[#112D4E]">
-									Ip Address *
+									Parent Name *
 								</label>
 								<input
 									type="text"
-									id="ipAddress"
-									name="ipAddress"
+									id="parentName"
+									name="parentName"
 									required
-									defaultValue={currentEditConfig.ipAddress}
-									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
+									defaultValue={currentEditObj.parentName}
+									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 								/>
 							</div>
 							<div>
 								<label
-									htmlFor="drive"
+									htmlFor="objectType"
 									className="mb-2 block text-sm font-semibold text-[#112D4E]">
-									Drive *
+									Object Type *
 								</label>
 								<input
 									type="text"
-									id="drive"
-									maxLength={2}
-									name="drive"
+									id="objectType"
+									name="objectType"
 									required
-									defaultValue={currentEditConfig.drive}
-									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
+									defaultValue={currentEditObj.objectType}
+									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 								/>
 							</div>
 							<div>
 								<label
-									htmlFor="path"
+									htmlFor="objectName"
 									className="mb-2 block text-sm font-semibold text-[#112D4E]">
-									Path *
+									Object Name *
 								</label>
 								<input
 									type="text"
-									id="path"
-									name="path"
+									id="objectName"
+									name="objectName"
 									required
-									defaultValue={currentEditConfig.path}
-									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
+									defaultValue={currentEditObj.objectName}
+									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
+								/>
+							</div>
+							<div>
+								<label
+									htmlFor="objectDescription"
+									className="mb-2 block text-sm font-semibold text-[#112D4E]">
+									Object Description *
+								</label>
+								<input
+									type="text"
+									id="objectDescription"
+									name="objectDescription"
+									required
+									defaultValue={currentEditObj.objectDescription}
+									className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 								/>
 							</div>
 							<div>
@@ -139,7 +154,7 @@ export default function EditSysConfigModal() {
 								<select
 									id="status"
 									name="status"
-									defaultValue={currentEditConfig.status ? "true" : "false"}
+									defaultValue={currentEditObj.status ? "true" : "false"}
 									className="w-full rounded-xl border border-[#e2e8f0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none">
 									<option value="true">Active</option>
 									<option value="false">Inactive</option>
@@ -154,12 +169,12 @@ export default function EditSysConfigModal() {
 								{loading ? (
 									<>
 										<div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-										Updating System Config...
+										Updating Access Object...
 									</>
 								) : (
 									<>
 										<CirclePlus className="h-5 w-5" />
-										Update System Configuration
+										Update Access Object
 									</>
 								)}
 							</button>

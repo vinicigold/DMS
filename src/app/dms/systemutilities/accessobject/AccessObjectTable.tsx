@@ -2,25 +2,23 @@
 import React, { useEffect } from "react"
 import { SquarePen, ToggleLeft, ToggleRight, CirclePlus } from "lucide-react"
 import { useModalStore } from "@/service/modal/useModalStore"
-import { SystemConfig } from "@/service/apireference/systemconfig/SystemConfigApi"
-import { useSystemConfigStore } from "@/service/apireference/systemconfig/useSystemConfigStore"
-import AddSysConfigModal from "@/components/modal/systemconfigmodal/AddSysConfigModal"
-import EditSysConfigModal from "@/components/modal/systemconfigmodal/EditSysConfigModal"
+import AddAccessObjectModal from "@/components/modal/accessobjectmodal/AddAccessObjectModal"
+import { useAccessObjectStore } from "@/service/systemutilities/accessobject/useAccessObjectStore"
+import EditAccessObjectModal from "@/components/modal/accessobjectmodal/EditAccessObjectModal"
 
-export default function SysConfigTable() {
+export default function AccessObjectTable() {
 	const { openModal } = useModalStore()
 	const {
-		configs,
+		accessObjects,
+		fetchObjects,
+		setCurrentEditObj,
 		page,
 		limit,
 		total,
 		totalPages,
 		setPage,
 		setLimit,
-		fetchConfigs,
-		setCurrentEditConfig,
-		toggleConfigStatus,
-	} = useSystemConfigStore()
+	} = useAccessObjectStore()
 
 	const getStatusBadge = (status: boolean) => {
 		const baseClasses = "px-2 py-1 rounded-full text-xs font-medium"
@@ -29,13 +27,9 @@ export default function SysConfigTable() {
 			: `${baseClasses} bg-red-100 text-red-800`
 	}
 
-	const handleToggleEnabled = (config: SystemConfig) => {
-		toggleConfigStatus(config.systemconfigid)
-	}
-
 	useEffect(() => {
-		fetchConfigs(page, limit)
-	}, [page, limit, fetchConfigs])
+		fetchObjects(page, limit)
+	}, [page, limit, fetchObjects])
 
 	return (
 		<div className="rounded-lg bg-white p-4 text-[#112D4E] shadow-md">
@@ -55,60 +49,68 @@ export default function SysConfigTable() {
 					</div>
 				</div>
 				<button
-					onClick={() => openModal("addSysConfig")}
+					onClick={() => openModal("addAccessObj")}
 					className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#112D4E] to-[#3F72AF] px-4 py-2 text-white transition-all duration-200 hover:from-[#163b65] hover:to-[#4a7bc8]">
 					<CirclePlus className="h-4 w-4" />
-					Add System Configuration
+					Add Access Object
 				</button>
 			</div>
 			<div className="hide-scrollbar h-[450px] overflow-x-auto">
 				<table className="w-full text-sm">
 					<thead>
 						<tr className="bg-[#CCE3FF] text-[#112D4E]">
-							<th className="px-3 py-2 text-left font-semibold">ID</th>
-							<th className="px-3 py-2 text-left font-semibold">System Name</th>
-							<th className="px-3 py-2 text-left font-semibold">IP Address</th>
-							<th className="px-3 py-2 text-center font-semibold">Drive</th>
-							<th className="px-3 py-2 text-center font-semibold">Path</th>
+							<th className="px-3 py-2 text-left font-semibold">
+								Access Object ID
+							</th>
+							<th className="px-3 py-2 text-left font-semibold">Parent ID</th>
+							<th className="px-3 py-2 text-left font-semibold">Parent Name</th>
+							<th className="px-3 py-2 text-center font-semibold">
+								Object Type
+							</th>
+							<th className="px-3 py-2 text-center font-semibold">
+								Object Name
+							</th>
+							<th className="px-3 py-2 text-center font-semibold">
+								Object Description
+							</th>
 							<th className="px-3 py-2 text-center font-semibold">Status</th>
 							<th className="px-3 py-2 text-center font-semibold">Function</th>
 						</tr>
 					</thead>
 					<tbody>
-						{configs.map((config) => (
+						{accessObjects.map((obj) => (
 							<tr
-								key={config.systemconfigid}
+								key={obj.accessObjectId}
 								className="border-b hover:bg-gray-50">
-								<td className="px-3 py-2">{config.systemconfigid}</td>
-								<td className="px-3 py-2">{config.systemName}</td>
-								<td className="px-3 py-2">{config.ipAddress}</td>
-								<td className="px-3 py-2 text-center">{config.drive}</td>
-								<td className="px-3 py-2 text-center">{config.path}</td>
+								<td className="px-3 py-2">{obj.accessObjectId}</td>
+								<td className="px-3 py-2">{obj.parentId || "-"}</td>
+								<td className="px-3 py-2">{obj.parentName || "-"}</td>
+								<td className="px-3 py-2">{obj.objectType}</td>
+								<td className="px-3 py-2">{obj.objectName}</td>
+								<td className="px-3 py-2">{obj.objectDescription || "-"}</td>
 								<td className="px-3 py-2 text-center">
-									<span className={getStatusBadge(config.status)}>
-										{config.status ? "Active" : "Disabled"}
+									<span className={getStatusBadge(obj.status)}>
+										{obj.status ? "Active" : "Disabled"}
 									</span>
 								</td>
 								<td className="px-3 py-2">
-									<div className="flex justify-center gap-2">
+									<div className="flex items-center justify-center gap-2">
 										<button
 											onClick={() => {
-												setCurrentEditConfig(config)
-												openModal("editSysConfig")
+												setCurrentEditObj(obj)
+												openModal("editAccessObj")
 											}}
 											title="Edit System Config"
 											className="rounded p-1 transition-all duration-200 hover:bg-[#CCE3FF]">
 											<SquarePen className="h-4 w-4 text-[#3F72AF] hover:text-[#112D4E]" />
 										</button>
 										<button
-											onClick={() => handleToggleEnabled(config)}
+											// onClick={() => handleToggleEnabled(config)}
 											title={
-												config.status
-													? "Disable File Type"
-													: "Activate File Type"
+												obj.status ? "Disable File Type" : "Activate File Type"
 											}
 											className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none">
-											{config.status ? (
+											{obj.status ? (
 												<ToggleRight className="h-6 w-6 text-green-400 hover:text-green-600" />
 											) : (
 												<ToggleLeft className="h-6 w-6 text-red-400 hover:text-red-600" />
@@ -163,8 +165,8 @@ export default function SysConfigTable() {
 					</button>
 				</div>
 			</div>
-			<AddSysConfigModal />
-			<EditSysConfigModal />
+			<AddAccessObjectModal />
+			<EditAccessObjectModal />
 		</div>
 	)
 }

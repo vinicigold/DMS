@@ -30,7 +30,6 @@ export const AddFiletype = create<FiletypeAddStore>((set) => ({
 	successMessage: null,
 
 	addFiletype: async (payload: AddFiletypePayload) => {
-		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
 		set({ isLoading: true, error: null, successMessage: null })
@@ -38,11 +37,9 @@ export const AddFiletype = create<FiletypeAddStore>((set) => ({
 		try {
 			const res = await fetch(`${API_BASE}/dms/file-type/create-filetype`, {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `${token}`,
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
+				credentials: "include",
 			})
 
 			if (!res.ok) throw new Error("Failed to add file type")

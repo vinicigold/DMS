@@ -2,7 +2,7 @@ import AccessRoleTable from "./AccessRoleTable"
 
 export default function AccessRole() {
 	return (
-		<div className="p-6 bg-gray-50 min-h-screen">
+		<div className="min-h-screen bg-gray-50 p-6">
 			<div className="mb-6">
 				<h1 className="text-xl font-bold text-[#112D4E] underline">
 					System Utilities

@@ -13,7 +13,7 @@ export async function LoginTwoFA(
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
-		const res = await fetch(`${API_BASE}/dms/auth/verify-login-2fa-otp`, {
+		const res = await fetch(`${API_BASE}/dms/auth/2fa/verify-login-otp`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -29,7 +29,6 @@ export async function LoginTwoFA(
 		}
 
 		const data: LoginOtpResponse = await res.json()
-		localStorage.setItem("authToken", data.message)
 
 		return data
 	} catch (error) {

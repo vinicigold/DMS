@@ -12,9 +12,9 @@ export default function DashboardLayout({
 	readonly rdr: React.ReactNode
 }) {
 	return (
-		<div className="p-6 overflow-hidden hide-scrollbar ">
+		<div className="hide-scrollbar overflow-hidden p-2">
 			<div className="mb-6">{children}</div>
-			<div className="grid grid-cols-1 md:grid-cols-12 gap-6 pb-3 overflow-hidden hide-scrollbar">
+			<div className="hide-scrollbar grid grid-cols-1 gap-6 overflow-hidden pb-3 md:grid-cols-12">
 				<div className="md:col-span-7">{dms}</div>
 				<div className="md:col-span-5">{cas}</div>
 				<div className="md:col-span-8">{rdr}</div>

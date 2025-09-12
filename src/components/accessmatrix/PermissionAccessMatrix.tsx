@@ -9,62 +9,61 @@ export default function PermissionAccessMatrix() {
 	const handlePermissionChange = (permissionId: number, granted: boolean) => {
 		if (selectedRole) {
 			updatePermission(selectedRole.roleid, permissionId, granted)
+			console.log("testing water", permissionId)
 		}
 	}
 	return (
-		<div className="sticky top-6 bg-white p-8 rounded-lg shadow-md border border-gray-200 max-h-[calc(100vh-3rem)] overflow-y-auto">
+		<div className="hide-scrollbar sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto rounded-lg border border-gray-200 bg-white p-8 shadow-md">
 			{selectedRole ? (
 				<div>
-					<h2 className="text-md font-semibold text-gray-700 mb-4">
+					<h2 className="text-md mb-4 font-semibold text-gray-700">
 						Permissions for {selectedRole.name}
 					</h2>
 
 					{permissions?.menus.map((menu) => (
 						<div key={menu.menuId} className="mb-6">
-							<h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center relative group">
-								<span className="inline-block mr-1">
+							<h3 className="group relative mb-2 flex items-center text-sm font-bold text-gray-800">
+								<span className="mr-1 inline-block">
 									<Info className="h-5 w-4 text-black" />
 								</span>
 								{menu.menuName}
-								<span className="absolute left-6 bottom-full mb-1 w-max max-w-xs rounded bg-gray-800 text-white text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+								<span className="absolute bottom-full left-6 mb-1 w-max max-w-xs rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
 									{menu.menuDescription}
 								</span>
 							</h3>
 							<ul className="space-y-2">
 								{menu.permissions.map((perm) => (
 									<li
-										key={perm.permissionId}
+										key={perm.accessObjectId}
 										className="flex items-center justify-between">
-										<span className="text-gray-700 text-sm flex items-center relative group">
-											<span className="inline-block mr-1 text-blue-400 h-5 w-4">
+										<span className="group relative flex items-center text-sm text-gray-700">
+											<span className="mr-1 inline-block h-5 w-4 text-blue-400">
 												<Info className="h-5 w-4" />
 											</span>
 											{perm.action}
-											<span className="absolute left-6 bottom-full mb-1 w-max max-w-xs rounded bg-gray-800 text-white text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+											<span className="absolute bottom-full left-6 mb-1 w-max max-w-xs rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
 												{perm.description}
 											</span>
 										</span>
 
-										<div className="relative inline-flex items-center cursor-pointer">
+										<div className="relative inline-flex cursor-pointer items-center">
 											<input
-												id={`perm-${perm.permissionId}`}
+												id={`perm-${perm.accessObjectId}`}
 												type="checkbox"
 												checked={perm.granted}
 												onChange={(e) =>
 													handlePermissionChange(
-														perm.permissionId,
-														e.target.checked
+														perm.accessObjectId,
+														e.target.checked,
 													)
 												}
-												className="sr-only peer"
+												className="peer sr-only"
 											/>
 											<button
 												onClick={() =>
-													selectedRole &&
-													updatePermission(
-														selectedRole.roleid,
-														perm.permissionId,
-														!perm.granted
+													handlePermissionChange(
+														perm.accessObjectId,
+														!perm.granted,
 													)
 												}
 												title={
@@ -87,8 +86,8 @@ export default function PermissionAccessMatrix() {
 					))}
 				</div>
 			) : (
-				<p className="text-gray-500 text-center py-10">
-					<UserCog className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+				<p className="py-10 text-center text-gray-500">
+					<UserCog className="mx-auto mb-4 h-16 w-16 text-gray-300" />
 					Please select a role to view permissions.
 				</p>
 			)}

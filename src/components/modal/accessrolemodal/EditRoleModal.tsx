@@ -1,175 +1,113 @@
 "use client"
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { useModalStore } from "@/service/modal/useModalStore"
 import { X, UserRoundCog, Save } from "lucide-react"
-import { EditRole } from "@/service/systemutilities/accessrole/EditRole"
+import { useAccessRoleStore } from "@/service/systemutilities/accessrole/useAccessRoleStore"
 
-interface EditRoleModalProps {
-	readonly isOpen: boolean
-	readonly onClose: () => void
-	readonly roleData: Role | null
-	readonly onUpdate: (updatedRole: Role) => void
-}
-
-interface Role {
-	roleid: number
-	accessname: string
-	description: string
-	status: boolean
-}
-
-export default function EditRoleModal({
-	isOpen,
-	onClose,
-	roleData,
-	onUpdate,
-}: EditRoleModalProps) {
-	const [isLoading, setIsLoading] = useState(false)
+export default function EditRoleModal() {
 	const { currentModal, closeModal } = useModalStore()
-	const [formData, setFormData] = useState<Role>({
-		roleid: 0,
-		accessname: "",
-		description: "",
-		status: true,
-	})
-
-	// Load roleData when modal opens
-	useEffect(() => {
-		if (roleData) {
-			setFormData(roleData)
-		}
-	}, [roleData])
-
-	const handleChange = (
-		e: React.ChangeEvent<
-			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-		>
-	) => {
-		const { name, value } = e.target
-		setFormData((prev) => ({
-			...prev,
-			[name]: name === "status" ? value === "true" : value,
-		}))
-	}
+	const { currentEditRole, editRole, loading } = useAccessRoleStore()
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		setIsLoading(true)
+		if (!currentEditRole) return
+		const formData = new FormData(e.currentTarget as HTMLFormElement)
 
-		const data = await EditRole(formData)
+		await editRole({
+			roleid: currentEditRole.roleid,
+			accessname: (formData.get("accessname") as string) || "",
+			description: (formData.get("description") as string) || "",
+			status: formData.get("status") === "true",
+		})
 
-		if (data) {
-			console.log("Role updated:", data)
-			onUpdate({
-				roleid: data.results.RoleID,
-				accessname: data.results.Name,
-				description: data.results.Description,
-				status: data.results.IsActive,
-			})
-			setFormData({
-				roleid: 0,
-				accessname: "",
-				description: "",
-				status: true,
-			})
-			onClose()
-		} else {
-			console.log("Failed to edit role")
-		}
-
-		setIsLoading(false)
+		closeModal()
 	}
 
-	if (currentModal !== "editRole") return null
+	if (currentModal !== "editRole" || !currentEditRole) return null
 
 	return (
-		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-				<div className="flex items-center justify-between p-6 border-b border-gray-100">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+			<div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white shadow-2xl">
+				{/* header */}
+				<div className="flex items-center justify-between border-b border-gray-100 p-6">
 					<div className="flex items-center gap-3">
-						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
-							<UserRoundCog className="w-5 h-5 text-white" />
+						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#112D4E] to-[#3F72AF]">
+							<UserRoundCog className="h-5 w-5 text-white" />
 						</div>
 						<div>
 							<h3 className="text-xl font-bold text-[#112D4E]">Edit Role</h3>
-							<p className="text-sm text-gray-500">Edit user role</p>
+							<p className="text-sm text-gray-500">Update role details</p>
 						</div>
 					</div>
 					<button
-						onClick={onClose}
-						className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-						<X className="w-4 h-4 text-gray-600" />
+						onClick={closeModal}
+						className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200">
+						<X className="h-4 w-4 text-gray-600" />
 					</button>
 				</div>
-				<form onSubmit={handleSubmit} className="p-6 space-y-4">
+
+				<form onSubmit={handleSubmit} className="space-y-4 p-6">
 					<div>
 						<label
-							htmlFor="name"
-							className="block text-[#112D4E] font-semibold mb-2 text-sm">
-							Role Name *
+							htmlFor="accessname"
+							className="mb-2 block text-sm font-semibold text-[#112D4E]">
+							Access Name *
 						</label>
 						<input
 							type="text"
+							id="accessname"
 							name="accessname"
-							value={formData.accessname}
-							onChange={handleChange}
 							required
-							placeholder="e.g., HR Manager"
-							className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] uppercase"
+							defaultValue={currentEditRole.name}
+							className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 						/>
 					</div>
-
 					<div>
 						<label
-							htmlFor="name"
-							className="block text-[#112D4E] font-semibold mb-2 text-sm">
-							Description *
+							htmlFor="description"
+							className="mb-2 block text-sm font-semibold text-[#112D4E]">
+							Description
 						</label>
-						<textarea
+						<input
+							type="text"
+							id="description"
 							name="description"
-							value={formData.description}
-							onChange={handleChange}
-							required
-							rows={3}
-							className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] resize-none"
-							placeholder="Describe role responsibilities..."
+							defaultValue={currentEditRole.description}
+							className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 						/>
 					</div>
-
 					<div>
 						<label
-							htmlFor="name"
-							className="block text-[#112D4E] font-semibold mb-2 text-sm">
-							Role Status *
+							htmlFor="status"
+							className="mb-2 block text-sm font-semibold text-[#112D4E]">
+							Status
 						</label>
 						<select
+							id="status"
 							name="status"
-							value={formData.status.toString()}
-							onChange={handleChange}
-							className="w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF]">
+							defaultValue={currentEditRole.isactive ? "true" : "false"}
+							className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none">
 							<option value="true">Active</option>
 							<option value="false">Inactive</option>
 						</select>
 					</div>
 
-					<div className="flex gap-4 mt-6">
-						<button
-							type="submit"
-							disabled={isLoading}
-							className="flex-1 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-6 py-3 rounded-xl hover:from-[#163b65] hover:to-[#4a7bc8] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-							{isLoading ? (
-								<>
-									<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-									Updating Role...
-								</>
-							) : (
-								<>
-									<Save className="w-5 h-5" />
-									Update Role
-								</>
-							)}
-						</button>
-					</div>
+					<button
+						type="submit"
+						disabled={loading}
+						className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#112D4E] to-[#3F72AF] px-6 py-3 text-white transition hover:from-[#163b65] hover:to-[#4a7bc8] disabled:opacity-50">
+						{loading ? (
+							<>
+								<div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+								Updating Role...
+							</>
+						) : (
+							<>
+								<Save className="h-5 w-5" />
+								Update Role
+							</>
+						)}
+					</button>
 				</form>
 			</div>
 		</div>

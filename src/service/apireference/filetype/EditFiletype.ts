@@ -31,7 +31,6 @@ export const EditFileType = create<FileTypeEditStore>((set) => ({
 	successMessage: null,
 
 	editFileType: async (payload: EditFileTypePayload) => {
-		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
 		set({ isLoading: true, error: null, successMessage: null })
@@ -39,21 +38,16 @@ export const EditFileType = create<FileTypeEditStore>((set) => ({
 		try {
 			const res = await fetch(`${API_BASE}/dms/file-type/update-filetype`, {
 				method: "POST", // keep POST if your API expects it
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `${token}`,
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
+				credentials: "include",
 			})
 
 			if (!res.ok) throw new Error("Failed to edit file type")
 
 			const data: EditFileTypeResponse = await res.json()
 
-			set({
-				isLoading: false,
-				successMessage: data.message,
-			})
+			set({ isLoading: false, successMessage: data.message })
 		} catch (err) {
 			set({
 				error: err instanceof Error ? err.message : String(err),

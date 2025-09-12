@@ -55,19 +55,15 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export async function fetchSystemConfigs(
 	page: number,
-	limit: number
+	limit: number,
 ): Promise<SystemConfigResponse> {
-	const token = localStorage.getItem("authToken")
 	const res = await fetch(
 		`${API_BASE}/dms/systemconfig/listall-sysconfig?page=${page}&limit=${limit}`,
 		{
 			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `${token}`,
-			},
+			headers: { "Content-Type": "application/json" },
 			credentials: "include",
-		}
+		},
 	)
 
 	if (!res.ok) {
@@ -78,15 +74,11 @@ export async function fetchSystemConfigs(
 }
 
 export async function addSystemConfig(
-	payload: AddSystemConfigPayload
+	payload: AddSystemConfigPayload,
 ): Promise<AddSystemConfigResponse> {
-	const token = localStorage.getItem("authToken")
 	const res = await fetch(`${API_BASE}/dms/systemconfig/create-sysconfig`, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `${token}`,
-		},
+		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(payload),
 		credentials: "include",
 	})
@@ -99,15 +91,11 @@ export async function addSystemConfig(
 }
 
 export async function editSystemConfig(
-	payload: EditSystemConfigPayload
+	payload: EditSystemConfigPayload,
 ): Promise<EditSystemConfigResponse> {
-	const token = localStorage.getItem("authToken")
 	const res = await fetch(`${API_BASE}/dms/systemconfig/update-sysconfig`, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `${token}`,
-		},
+		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(payload),
 		credentials: "include",
 	})

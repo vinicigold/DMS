@@ -21,10 +21,9 @@ interface AccessRoleApiResponse {
 }
 
 export async function FetchAccessRoleTable(
-	params: { page?: number; limit?: number } = {}
+	params: { page?: number; limit?: number } = {},
 ): Promise<AccessRoleApiResponse | null> {
 	try {
-		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 		const query = new URLSearchParams()
 		if (params.page) query.set("page", String(params.page))
@@ -33,12 +32,9 @@ export async function FetchAccessRoleTable(
 			`${API_BASE}/dms/access-role/get-role?${query.toString()}`,
 			{
 				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `${token}`,
-				},
+				headers: { "Content-Type": "application/json" },
 				credentials: "include",
-			}
+			},
 		)
 
 		if (!res.ok) {

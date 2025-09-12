@@ -10,7 +10,7 @@ interface LoginUserResponse {
 }
 
 export async function LoginUser(
-	login: LoginUserPayload
+	login: LoginUserPayload,
 ): Promise<{ status: number; data: LoginUserResponse } | null> {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
@@ -18,6 +18,7 @@ export async function LoginUser(
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(login),
+			credentials: "include",
 		})
 		if (!res.ok) {
 			throw new Error("Invalid Username or Password")
@@ -27,10 +28,7 @@ export async function LoginUser(
 
 		console.log("data in login", data)
 
-		return {
-			status: res.status,
-			data,
-		}
+		return { status: res.status, data }
 	} catch (err) {
 		console.error("Error login", err)
 		return null

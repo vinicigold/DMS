@@ -43,7 +43,7 @@ export default function LoginOtpModal({
 
 	const handleOtpChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
-		index: number
+		index: number,
 	) => {
 		if (e.target.value.length && index < otpFieldIds.length - 1) {
 			otpRefs.current[index + 1]?.focus()
@@ -52,7 +52,7 @@ export default function LoginOtpModal({
 
 	const handleOtpDel = (
 		e: React.KeyboardEvent<HTMLInputElement>,
-		index: number
+		index: number,
 	) => {
 		if (e.key === "Backspace") {
 			if (e.currentTarget.value === "") {
@@ -112,15 +112,15 @@ export default function LoginOtpModal({
 	if (!isOpen) return null
 
 	return (
-		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100">
-				<div className="flex items-center justify-between p-6 border-b border-gray-100">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+			<div className="w-full max-w-md scale-100 transform rounded-3xl bg-white shadow-2xl transition-all duration-300">
+				<div className="flex items-center justify-between border-b border-gray-100 p-6">
 					<div className="flex items-center gap-3">
-						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3f72AF] rounded-xl flex items-center justify-center">
-							<ShieldCheck className="w-5 h-5 text-white" />
+						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#112D4E] to-[#3f72AF]">
+							<ShieldCheck className="h-5 w-5 text-white" />
 						</div>
 						<div>
-							<h3 className="text-med font-bold text-[#112D4E] ">
+							<h3 className="text-med font-bold text-[#112D4E]">
 								TWO FACTOR AUTHENTICATION
 							</h3>
 							<p className="text-sm text-gray-500">Please enter 6-digit code</p>
@@ -128,17 +128,17 @@ export default function LoginOtpModal({
 					</div>
 					<button
 						onClick={onClose}
-						className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-						<X className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors" />
+						className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200">
+						<X className="h-4 w-4 text-gray-600 transition-colors hover:text-gray-800" />
 					</button>
 				</div>
 				<form onSubmit={handleSubmit} className="p-6">
-					<div className="text-center mb-6">
-						<p className="text-gray-600 mb-4">
+					<div className="mb-6 text-center">
+						<p className="mb-4 text-gray-600">
 							Enter two factor Authenticator code
 						</p>
 					</div>
-					<div className="flex gap-3 justify-center mb-6">
+					<div className="mb-6 flex justify-center gap-3">
 						{otpFieldIds.map((id, index) => (
 							<input
 								key={id}
@@ -150,36 +150,33 @@ export default function LoginOtpModal({
 								onInput={allowNum}
 								onChange={(e) => handleOtpChange(e, index)}
 								onKeyDown={(e) => handleOtpDel(e, index)}
-								className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-xl transition-all duration-200
-                            ${
-															id
-																? "border-[#3F72AF] bg-[##3F72AF]/5"
-																: "border-gray-200 hover:border-gray-300"
-														}focus:outline-none focus:border-[#3F72AF] focus:ring-4 focus:ring-[#3F72AF]/10`}
+								className={`h-12 w-12 rounded-xl border-2 text-center text-xl font-bold transition-all duration-200 ${
+									id
+										? "border-[#3F72AF] bg-[##3F72AF]/5"
+										: "border-gray-200 hover:border-gray-300"
+								}focus:outline-none focus:border-[#3F72AF] focus:ring-4 focus:ring-[#3F72AF]/10`}
 								disabled={isLoading}
 								required
 							/>
 						))}
 					</div>
 					{error && (
-						<div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4">
-							<p className="text-red-600 text-sm text-center">{error}</p>
+						<div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3">
+							<p className="text-center text-sm text-red-600">{error}</p>
 						</div>
 					)}
 					<button
 						type="submit"
 						disabled={isLoading}
-						className="w-full bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white font-semibold py-4 rounded-xl hover:from-[#163B65] hover:to-[#4A7BC8]
-                    transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                    flex items-center justify-center gap-2 mb-4">
+						className="mb-4 flex w-full transform items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#112D4E] to-[#3F72AF] py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:from-[#163B65] hover:to-[#4A7BC8] hover:shadow-xl disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50">
 						{isLoading ? (
 							<>
-								<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+								<div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
 								Verifying...
 							</>
 						) : (
 							<>
-								<CircleCheck className="w-5 h-5" />
+								<CircleCheck className="h-5 w-5" />
 								Verify OTP
 							</>
 						)}
@@ -190,9 +187,8 @@ export default function LoginOtpModal({
 								type="button"
 								onClick={handleResetOtp}
 								disabled={resetCooldown > 0 || isLoading}
-								className="text-[#3F72AF] hover:text[#112D4E] font-medium text-sm hover:underline transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                            flex items-center justify-center gap-1 mx-auto">
-								<RefreshCw className="w-4 h-4" />
+								className="hover:text[#112D4E] mx-auto flex items-center justify-center gap-1 text-sm font-medium text-[#3F72AF] transition-colors hover:underline disabled:cursor-not-allowed disabled:opacity-50">
+								<RefreshCw className="h-4 w-4" />
 								{resetCooldown > 0
 									? `Reset 2FA (${resetCooldown}s)`
 									: "Reset 2FA"}

@@ -8,6 +8,7 @@ import { Building2, User, Lock, Eye, EyeOff, KeyRound } from "lucide-react"
 import { LoginUser } from "../service/login/LoginUser"
 import LoginOtpModal from "@/components/modal/loginmodal/LoginOtpModal"
 import { maskEmail } from "@/utilities/mask"
+import Image from "next/image"
 
 export default function Login() {
 	const [signIn, setSignIn] = useState({
@@ -57,6 +58,7 @@ export default function Login() {
 			setEmail(successLogin.data.email)
 			setShowOtpModal(true)
 			setIsLoading(false)
+			console.log(Image, Building2)
 			return
 		}
 		setIsLoading(false)
@@ -65,21 +67,18 @@ export default function Login() {
 	return (
 		<div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] relative overflow-hidden">
 			<div
-				className={`w-full max-w-sm bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 z-10 transition-all duration-500
+				className={`w-full max-w-md p-8 rounded-3xl bg-white/90 backdrop-blur-lg border border-white/30 shadow-xl shadow-black/10 relative z-10 transition-all duration-500
       			${
 							showStaffIdModal || showOtpModal || showNewPassModal
 								? "blur-sm scale-[0.98] opacity-80"
-								: "hover:shadow-3xl"
+								: "hover:shadow-2xl"
 						}`}>
 				<form onSubmit={handleSubmit} className="w-full">
 					<div className="text-center mb-6">
-						<div className="w-16 h-16 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
-							<Building2 className="w-8 h-8 text-white" />
-						</div>
-						<h2 className="text-xl font-bold text-[#112D4E] mb-2">
-							Document Management System
+						<h1 className="text-2xl font-bold text-[#112D4E] mb-2">Document</h1>
+						<h2 className="text-xl font-bold text-[#112D4E] mb-2 mt-2">
+							Management System
 						</h2>
-						<p className="text-[#64748b] text-sm">V1.0.0</p>
 					</div>
 					{error && (
 						<div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
@@ -91,11 +90,11 @@ export default function Login() {
 					<div className="mb-4">
 						<label
 							htmlFor="username"
-							className="block text-[#112D4E] font-semibold mb-2 text-xs">
+							className="block text-[#112D4E] font-semibold mb-2 text-xs px-2">
 							Username
 						</label>
 						<div className="relative">
-							<User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-4 h-4" />
+							<User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#112D4E] w-4 h-4" />
 							<input
 								type="text"
 								id="username"
@@ -112,11 +111,11 @@ export default function Login() {
 					<div className="mb-4">
 						<label
 							htmlFor="password"
-							className="block text-[#112D4E] font-semibold mb-2 text-xs">
+							className="block text-[#112D4E] font-semibold mb-2 text-xs px-2">
 							Password
 						</label>
 						<div className="relative">
-							<Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748b] w-4 h-4" />
+							<Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#112D4E] w-4 h-4" />
 							<input
 								type={showPassword ? "text" : "password"}
 								id="password"
@@ -164,6 +163,9 @@ export default function Login() {
 							className="text-[#6a83a1] hover:text-[#112D4E] text-sm font-medium hover:underline transition-colors">
 							Forgot your password?
 						</button>
+					</div>
+					<div className="text-center">
+						<p className="text-[#64748b] text-xs">V1.0.0</p>
 					</div>
 				</form>
 			</div>

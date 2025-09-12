@@ -30,7 +30,6 @@ export const AddDoctype = create<DoctypeAddStore>((set) => ({
 	successMessage: null,
 
 	addDoctype: async (payload: AddDoctypePayload) => {
-		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
 		set({ isLoading: true, error: null, successMessage: null })
@@ -38,21 +37,16 @@ export const AddDoctype = create<DoctypeAddStore>((set) => ({
 		try {
 			const res = await fetch(`${API_BASE}/dms/document-type/create-document`, {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `${token}`,
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
+				credentials: "include",
 			})
 
 			if (!res.ok) throw new Error("Failed to add document type")
 
 			const data: AddDoctypeReponse = await res.json()
 
-			set({
-				isLoading: false,
-				successMessage: data.message,
-			})
+			set({ isLoading: false, successMessage: data.message })
 		} catch (err) {
 			set({
 				error: err instanceof Error ? err.message : String(err),

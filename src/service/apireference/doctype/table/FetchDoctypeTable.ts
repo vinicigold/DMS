@@ -40,7 +40,6 @@ export const FetchDoctypeTable = create<DoctypeStore>((set, get) => ({
 	setLimit: (limit) => set({ limit }),
 
 	fetchDoctypes: async (page?: number, limit?: number) => {
-		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
 		const currentPage = page ?? get().page
@@ -59,7 +58,6 @@ export const FetchDoctypeTable = create<DoctypeStore>((set, get) => ({
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: `${token}`,
 					},
 					credentials: "include",
 				}

@@ -24,7 +24,6 @@ export async function UserAccountsTable(
 	params: { page?: number; limit?: number } = {}
 ): Promise<UserAccountApiResponse | null> {
 	try {
-		const token = localStorage.getItem("authToken")
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
 		const query = new URLSearchParams()
@@ -37,7 +36,6 @@ export async function UserAccountsTable(
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: `${token}` || "",
 				},
 				credentials: "include",
 			}

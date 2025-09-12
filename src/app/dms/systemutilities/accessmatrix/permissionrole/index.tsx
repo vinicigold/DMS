@@ -25,7 +25,7 @@ export default function PermissionRole() {
 						Roles
 					</h2>
 					<button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white text-sm font-medium rounded-lg shadow hover:bg-blue-700 transition">
-						Add Permission
+						Add Role
 					</button>
 				</div>
 

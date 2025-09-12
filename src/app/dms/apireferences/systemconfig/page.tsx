@@ -1,6 +1,6 @@
 import SysConfigTable from "./SysConfigTable"
 
-export default function Document() {
+export default function SystemConfig() {
 	return (
 		<div className="p-6 bg-gray-50 min-h-screen">
 			<div className="mb-6">

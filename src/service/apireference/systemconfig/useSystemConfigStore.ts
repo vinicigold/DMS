@@ -83,7 +83,7 @@ export const useSystemConfigStore = create<SystemConfigState>((set, get) => ({
 			const res = await editSystemConfig(payload)
 			set((state) => ({
 				configs: state.configs.map((cfg) =>
-					cfg.systemconfigid === res.results.systemconfigid ? res.results : cfg
+					cfg.systemconfigid === res.results.systemconfigid ? res.results : cfg,
 				),
 				loading: false,
 			}))
@@ -98,7 +98,7 @@ export const useSystemConfigStore = create<SystemConfigState>((set, get) => ({
 
 	toggleConfigStatus: async (systemconfigid: number) => {
 		const config = get().configs.find(
-			(c) => c.systemconfigid === systemconfigid
+			(c) => c.systemconfigid === systemconfigid,
 		)
 		if (!config) return
 
@@ -112,7 +112,7 @@ export const useSystemConfigStore = create<SystemConfigState>((set, get) => ({
 			const res = await editSystemConfig(updatedPayload)
 			set((state) => ({
 				configs: state.configs.map((c) =>
-					c.systemconfigid === systemconfigid ? res.results : c
+					c.systemconfigid === systemconfigid ? res.results : c,
 				),
 				loading: false,
 			}))

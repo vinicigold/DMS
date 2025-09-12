@@ -18,7 +18,7 @@ export default function AddSysConfigModal() {
 	})
 
 	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
 	) => {
 		const { name, value } = e.target
 		setForm((prev) => ({ ...prev, [name]: value }))
@@ -41,12 +41,12 @@ export default function AddSysConfigModal() {
 
 	if (currentModal !== "addSysConfig") return null
 	return (
-		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-hidden overscroll-contain">
-			<div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto hide-scrollbar">
-				<div className="flex items-center justify-between p-6 border-b border-gray-100">
+		<div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden overscroll-contain bg-black/50 p-4 backdrop-blur-sm">
+			<div className="hide-scrollbar max-h-[90vh] w-full max-w-lg scale-100 transform overflow-y-auto rounded-3xl bg-white shadow-2xl transition-all duration-300">
+				<div className="flex items-center justify-between border-b border-gray-100 p-6">
 					<div className="flex items-center gap-3">
-						<div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
-							<Server className="w-5 h-5 text-white" />
+						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#112D4E] to-[#3F72AF]">
+							<Server className="h-5 w-5 text-white" />
 						</div>
 						<div>
 							<h3 className="text-xl font-bold text-[#112D4E]">
@@ -59,8 +59,8 @@ export default function AddSysConfigModal() {
 					</div>
 					<button
 						onClick={closeModal}
-						className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-						<X className="w-4 h-4 text-gray-600" />
+						className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200">
+						<X className="h-4 w-4 text-gray-600" />
 					</button>
 				</div>
 				<form onSubmit={handleSubmit} className="p-6">
@@ -68,7 +68,7 @@ export default function AddSysConfigModal() {
 						<div>
 							<label
 								htmlFor="appId"
-								className="block text-[#112D4E] font-semibold mb-2 text-sm">
+								className="mb-2 block text-sm font-semibold text-[#112D4E]">
 								Application ID *
 							</label>
 							<input
@@ -78,13 +78,13 @@ export default function AddSysConfigModal() {
 								onChange={handleChange}
 								name="appId"
 								required
-								className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
+								className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 							/>
 						</div>
 						<div>
 							<label
 								htmlFor="systemName"
-								className="block text-[#112D4E] font-semibold mb-2 text-sm">
+								className="mb-2 block text-sm font-semibold text-[#112D4E]">
 								System Name *
 							</label>
 							<input
@@ -94,13 +94,13 @@ export default function AddSysConfigModal() {
 								value={form.systemName}
 								onChange={handleChange}
 								required
-								className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
+								className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 							/>
 						</div>
 						<div>
 							<label
 								htmlFor="ipAddress"
-								className="block text-[#112D4E] font-semibold mb-2 text-sm">
+								className="mb-2 block text-sm font-semibold text-[#112D4E]">
 								Ip Address *
 							</label>
 							<input
@@ -110,13 +110,13 @@ export default function AddSysConfigModal() {
 								onChange={handleChange}
 								name="ipAddress"
 								required
-								className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
+								className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 							/>
 						</div>
 						<div>
 							<label
 								htmlFor="drive"
-								className="block text-[#112D4E] font-semibold mb-2 text-sm">
+								className="mb-2 block text-sm font-semibold text-[#112D4E]">
 								Drive *
 							</label>
 							<input
@@ -127,13 +127,13 @@ export default function AddSysConfigModal() {
 								maxLength={2}
 								name="drive"
 								required
-								className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
+								className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 							/>
 						</div>
 						<div>
 							<label
 								htmlFor="path"
-								className="block text-[#112D4E] font-semibold mb-2 text-sm">
+								className="mb-2 block text-sm font-semibold text-[#112D4E]">
 								Path *
 							</label>
 							<input
@@ -143,13 +143,13 @@ export default function AddSysConfigModal() {
 								value={form.path}
 								onChange={handleChange}
 								required
-								className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200 uppercase"
+								className="w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[#112D4E] uppercase transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none"
 							/>
 						</div>
 						<div>
 							<label
 								htmlFor="status"
-								className="block text-[#112D4E] font-semibold mb-2 text-sm">
+								className="mb-2 block text-sm font-semibold text-[#112D4E]">
 								System Configuration Status*
 							</label>
 							<select
@@ -157,25 +157,25 @@ export default function AddSysConfigModal() {
 								name="status"
 								value={form.status}
 								onChange={handleChange}
-								className="w-full px-4 py-3 border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[#112D4E] bg-white transition-all duration-200">
+								className="w-full rounded-xl border border-[#e2e8f0] bg-white px-4 py-3 text-[#112D4E] transition-all duration-200 focus:ring-2 focus:ring-[#3F72AF] focus:outline-none">
 								<option value="true">Active</option>
 								<option value="false">Inactive</option>
 							</select>
 						</div>
 					</div>
-					<div className="flex gap-4 mt-6">
+					<div className="mt-6 flex gap-4">
 						<button
 							type="submit"
 							disabled={loading}
-							className="flex-1 bg-gradient-to-r from-[#112D4E] to-[#3F72AF] text-white px-6 py-3 rounded-xl hover:from-[#163b65] hover:to-[#4a7bc8] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+							className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#112D4E] to-[#3F72AF] px-6 py-3 text-white transition-all duration-200 hover:from-[#163b65] hover:to-[#4a7bc8] disabled:cursor-not-allowed disabled:opacity-50">
 							{loading ? (
 								<>
-									<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+									<div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
 									Creating System Config...
 								</>
 							) : (
 								<>
-									<CirclePlus className="w-5 h-5" />
+									<CirclePlus className="h-5 w-5" />
 									Create System Configuration
 								</>
 							)}

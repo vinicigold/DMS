@@ -15,7 +15,6 @@ export async function UploadFileApi(
 	file: File[],
 	doctypeId: string
 ): Promise<UploadResponse> {
-	const token = localStorage.getItem("authToken")
 	const formData = new FormData()
 	file.forEach((file) => formData.append("files", file))
 	formData.append("doctypeid", doctypeId)
@@ -24,10 +23,8 @@ export async function UploadFileApi(
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 		const res = await fetch(`${API_BASE}/dms/api/web-upload`, {
 			method: "POST",
-			headers: {
-				Authorization: `${token}`,
-			},
 			body: formData,
+			credentials: "include",
 		})
 
 		if (!res.ok) {

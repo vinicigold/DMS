@@ -7,14 +7,15 @@ interface ResendResponse {
 }
 
 export async function ResendTwoFA(
-	reset: ResendPayload
+	reset: ResendPayload,
 ): Promise<ResendResponse | null> {
 	try {
 		const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
-		const res = await fetch(`${API_BASE}/dms/auth/resend-otp-email`, {
+		const res = await fetch(`${API_BASE}/dms/auth/2fa/resend-email-otp`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(reset),
+			credentials: "include",
 		})
 		if (!res.ok) {
 			throw new Error("Failed to resend 2FA")

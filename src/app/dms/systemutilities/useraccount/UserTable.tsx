@@ -89,7 +89,9 @@ export default function UserTable() {
 			})
 		)
 	}
-
+	console.log(EditUserModal)
+	console.log(selectedUser)
+	console.log(showEditUserModal)
 	const getStatusBadge = (status: User["status"]) => {
 		const baseClasses = "px-2 py-1 rounded-full text-xs font-medium"
 		switch (status) {
